@@ -1,5 +1,5 @@
 #!/bin/sh
-DOCERN=0
+DOCERN=1
 
 ## Try and take the JOBWRAPPER and JOBSUBMIT commands
 ## from the environment if set, otherwise use these defaults
@@ -107,27 +107,32 @@ for SYST in central #JESUP JESDOWN JERBETTER JERWORSE UESUP UESDOWN #NOTE SYSTEM
     export JOBSUBMIT=$JOBSCRIPT" "$JOBQUEUE
     echo "Using job-submission: " $JOBSUBMIT
     
-    PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/MET/
+    for dataset in MET PARKED
+    do
+
+	PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/$dataset
     
-    for FILELIST in `ls filelists/$PRODUCTION/$QUEUEDIR/${PRODUCTION}_MET_*`
-      do
-      echo "Processing files in "$FILELIST
-      
-      echo $FILELIST > tmp.txt
-      sed "s/filelists\/${PRODUCTION}\/$QUEUEDIR\/${PRODUCTION}_MET_//" tmp.txt > tmp2.txt
-      
-      JOB=MET_`sed "s/\.dat//" tmp2.txt`
-      
-      echo "JOB name = $JOB"
-      
-      $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$JOB.root --output_folder=$OUTPUTDIR  $SYSTOPTIONS --input_params=$INPUTPARAMS &> $JOBDIR/$JOB.log" $JOBDIR/$JOB.sh
-      $JOBSUBMIT $JOBDIR/$JOB.sh
-      
-      
-      rm tmp.txt tmp2.txt
-      
+	for FILELIST in `ls filelists/$PRODUCTION/$QUEUEDIR/${PRODUCTION}_${dataset}_*`
+	do
+	    echo "Processing files in "$FILELIST
+	    
+	    echo $FILELIST > tmp.txt
+	    sed "s/filelists\/${PRODUCTION}\/$QUEUEDIR\/${PRODUCTION}_${dataset}_//" tmp.txt > tmp2.txt
+	    
+	    JOB=${dataset}_`sed "s/\.dat//" tmp2.txt`
+	    
+	    echo "JOB name = $JOB"
+	    
+	    $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$JOB.root --output_folder=$OUTPUTDIR  $SYSTOPTIONS --input_params=$INPUTPARAMS &> $JOBDIR/$JOB.log" $JOBDIR/$JOB.sh $DOCERN
+	    $JOBSUBMIT $JOBDIR/$JOB.sh
+	    
+	    
+	    rm tmp.txt tmp2.txt
+	    
+	done
+  
     done
-        
+    
   done
   
 done

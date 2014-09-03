@@ -17,6 +17,7 @@ namespace ic {
   }
 
   int LumiMask::PreAnalysis() {
+    /*
     std::cout << "** PreAnalysis Info for LumiMask **" << std::endl;
     if (input_file_ != "") {
       std::cout << "Parsing json file: " << input_file_ << std::endl;
@@ -54,11 +55,12 @@ namespace ic {
     if (produce_output_jsons_ != "") {
       std::cout << "Writing output jsons with name: " << produce_output_jsons_ << std::endl;
     }
+    */
     return 0;
   }
 
   int LumiMask::Execute(TreeEvent *event) {
-    EventInfo const *eventInfo = event->GetPtr<EventInfo>("eventInfo");
+    /*EventInfo const *eventInfo = event->GetPtr<EventInfo>("eventInfo");
     unsigned run = eventInfo->run();
     unsigned ls = eventInfo->lumi_block();
     all_json[run].insert(ls);
@@ -73,11 +75,11 @@ namespace ic {
       reject_json[run].insert(ls);
       return 1;
     }
-
+    */
     return 0;
   }
   int LumiMask::PostAnalysis() {
-    if (produce_output_jsons_ != "") {
+    /*if (produce_output_jsons_ != "") {
       std::ofstream output;
       output.open((produce_output_jsons_+"_all.json").c_str());
       WriteJson(all_json, output);
@@ -88,7 +90,7 @@ namespace ic {
       output.open((produce_output_jsons_+"_reject.json").c_str());
       WriteJson(reject_json, output);
       output.close(); 
-    }
+      }*/
     return 0;
   }
 

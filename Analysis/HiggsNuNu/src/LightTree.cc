@@ -118,7 +118,7 @@ namespace ic {
       else  std::cout << "Processing set for MC !" << std::endl;
     }
 
-    outputTree_ = fs_->make<TTree>("LightTree","Tree containing LightTreeAna input variables");
+    outputTree_ = fs_->make<TTree>(this->ModuleName().c_str(),"Tree containing LightTreeAna input variables");
 
     outputTree_->Branch("run",&run_);
     outputTree_->Branch("lumi",&lumi_);
