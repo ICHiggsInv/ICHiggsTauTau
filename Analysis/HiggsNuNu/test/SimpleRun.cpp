@@ -41,6 +41,7 @@
 #include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/MetLaserFilters.h"
 #include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/HinvPrint.h"
 #include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/CJVFilter.h"
+#include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/studyVBFqcd.h"
 
 #include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/HinvConfig.h"
 
@@ -284,15 +285,30 @@ int main(int argc, char* argv[]){
     .set_min(1)
     .set_max(1);
 
+
+  // ------------------------------------------------------------------------------------
+  // GenParticles Modules
+  // ------------------------------------------------------------------------------------
+  
+
+  studyVBFqcd studyb = studyVBFqcd("VBFQCDb",5);
+  studyVBFqcd studyc = studyVBFqcd("VBFQCDc",4);
+  studyVBFqcd studyl = studyVBFqcd("VBFQCDl",3);
+
+
   // ------------------------------------------------------------------------------------
   // Build Analysis Sequence
   // ------------------------------------------------------------------------------------  
   
   //     analysis.AddModule(&dataMCTriggerPathFilter);
   
-  analysis.AddModule(&selMuonCopyCollection);
-  analysis.AddModule(&selMuonFilter);
-  
+  //analysis.AddModule(&selMuonCopyCollection);
+  //analysis.AddModule(&selMuonFilter);
+
+  analysis.AddModule(&studyb);
+  analysis.AddModule(&studyc);
+  analysis.AddModule(&studyl);
+
   // Run analysis
 
   analysis.RetryFileAfterFailure(5,5);// int <pause between attempts in seconds>, int <number of retry attempts to make> );

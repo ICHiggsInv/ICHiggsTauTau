@@ -15,32 +15,33 @@ namespace ic {
 class HinvWeights : public ModuleBase {
  private:
   CLASS_MEMBER(HinvWeights, fwlite::TFileService*, fs);
-  CLASS_MEMBER(HinvWeights, ic::mc, mc)
-  CLASS_MEMBER(HinvWeights, ic::era, era)
-  CLASS_MEMBER(HinvWeights, bool, save_weights)
-  CLASS_MEMBER(HinvWeights, bool, save_lumixs_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_trg_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_1dparkedtrg_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_fitted1dparkedtrg_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_3dtrg_weights)
-  CLASS_MEMBER(HinvWeights, bool, trg_applied_in_mc)
-  CLASS_MEMBER(HinvWeights, bool, do_idiso_tight_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_idiso_veto_weights)
-  CLASS_MEMBER(HinvWeights, bool, do_w_soup)
-  CLASS_MEMBER(HinvWeights, bool, do_w_reweighting)
-  CLASS_MEMBER(HinvWeights, bool, do_dy_soup)
-  CLASS_MEMBER(HinvWeights, bool, do_dy_reweighting)
-  CLASS_MEMBER(HinvWeights, std::string, input_met)
-  CLASS_MEMBER(HinvWeights, bool, do_idiso_err)
-  CLASS_MEMBER(HinvWeights, bool, do_idiso_errmuore)
-  CLASS_MEMBER(HinvWeights, bool, do_idiso_errupordown)
-  CLASS_MEMBER(HinvWeights, bool, do_lumixs_weights)
-  CLASS_MEMBER(HinvWeights, std::string, input_params)
-  CLASS_MEMBER(HinvWeights, std::string, sample_name)
-  CLASS_MEMBER(HinvWeights, std::string, trg_weight_file)
-  CLASS_MEMBER(HinvWeights, double, Alumi)
-  CLASS_MEMBER(HinvWeights, double, BClumi)
-  CLASS_MEMBER(HinvWeights, double, Dlumi)
+  CLASS_MEMBER(HinvWeights, ic::mc, mc);
+  CLASS_MEMBER(HinvWeights, ic::era, era);
+  CLASS_MEMBER(HinvWeights, bool, save_weights);
+  CLASS_MEMBER(HinvWeights, bool, save_lumixs_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_trg_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_1dparkedtrg_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_fitted1dparkedtrg_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_3dtrg_weights);
+  CLASS_MEMBER(HinvWeights, bool, trg_applied_in_mc);
+  CLASS_MEMBER(HinvWeights, bool, do_idiso_tight_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_idiso_veto_weights);
+  CLASS_MEMBER(HinvWeights, bool, do_w_soup);
+  CLASS_MEMBER(HinvWeights, bool, do_w_reweighting);
+  CLASS_MEMBER(HinvWeights, bool, do_dy_soup);
+  CLASS_MEMBER(HinvWeights, bool, do_dy_reweighting);
+  CLASS_MEMBER(HinvWeights, std::string, input_met);
+  CLASS_MEMBER(HinvWeights, std::string, dijet_label);
+  CLASS_MEMBER(HinvWeights, bool, do_idiso_err);
+  CLASS_MEMBER(HinvWeights, bool, do_idiso_errmuore);
+  CLASS_MEMBER(HinvWeights, bool, do_idiso_errupordown);
+  CLASS_MEMBER(HinvWeights, bool, do_lumixs_weights);
+  CLASS_MEMBER(HinvWeights, std::string, input_params);
+  CLASS_MEMBER(HinvWeights, std::string, sample_name);
+  CLASS_MEMBER(HinvWeights, std::string, trg_weight_file);
+  CLASS_MEMBER(HinvWeights, double, Alumi);
+  CLASS_MEMBER(HinvWeights, double, BClumi);
+  CLASS_MEMBER(HinvWeights, double, Dlumi);
 
   TFile *triggerSF_;
   std::vector<TH1F*> hist_trigSF_METL1vec;

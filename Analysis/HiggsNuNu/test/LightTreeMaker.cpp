@@ -671,7 +671,8 @@ int main(int argc, char* argv[]){
     .set_do_idiso_errupordown(doidisoerrupordown)
     .set_do_idiso_errmuore(doidisoerrmuore)
     .set_fs(fs)
-    .set_input_met("metNoMuons");
+    .set_input_met("metNoMuons")
+    .set_dijet_label("jjLeadingCandidates");
   if (!is_data) {
     hinvWeights.set_do_trg_weights(dotrgeff)
       .set_do_3dtrg_weights(do3dtrgeff)
@@ -912,6 +913,8 @@ int main(int argc, char* argv[]){
   //if (printEventContent) analysis.AddModule(&hinvPrint);
   //two-leading jet pair production before plotting
   analysis.AddModule(&jjLeadingPairProducer);
+  analysis.AddModule("j2j3path",&jjLeadingPairProducer);
+  analysis.AddModule("j1j3path",&jjLeadingPairProducer);
   analysis.AddModule("j2j3path",&j2j3PairProducer);
   analysis.AddModule("j1j3path",&j1j3PairProducer);
   //if (printEventContent) analysis.AddModule(&hinvPrint);

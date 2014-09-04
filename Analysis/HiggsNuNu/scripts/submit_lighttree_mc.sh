@@ -1,5 +1,5 @@
 #!/bin/sh
-DOCERN=0
+DOCERN=1
 
 ## Try and take the JOBWRAPPER and JOBSUBMIT commands
 ## from the environment if set, otherwise use these defaults
@@ -138,12 +138,12 @@ for SYST in central #JERBETTER JERWORSE UESUP UESDOWN #NOTE TO RUN JER DOSMEAR M
 	    do
 	    WJOB=$JOB"_"$FLAVOUR
 	    
-	    $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$WJOB.root --output_folder=$OUTPUTDIR $SYSTOPTIONS --input_params=$INPUTPARAMS --wstream=$FLAVOUR &> $JOBDIR/$WJOB.log" $JOBDIR/$WJOB.sh
+	    $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$WJOB.root --output_folder=$OUTPUTDIR $SYSTOPTIONS --input_params=$INPUTPARAMS --wstream=$FLAVOUR &> $JOBDIR/$WJOB.log" $JOBDIR/$WJOB.sh $DOCERN
 	    $JOBSUBMIT $JOBDIR/$WJOB.sh                                                                                      
 	  done
 	  
       else  
-	  $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$JOB.root --output_folder=$OUTPUTDIR $SYSTOPTIONS --input_params=$INPUTPARAMS &> $JOBDIR/$JOB.log" $JOBDIR/$JOB.sh
+	  $JOBWRAPPER "./bin/LightTreeMaker --cfg=$CONFIG --filelist="$FILELIST" --input_prefix=$PREFIX --output_name=$JOB.root --output_folder=$OUTPUTDIR $SYSTOPTIONS --input_params=$INPUTPARAMS &> $JOBDIR/$JOB.log" $JOBDIR/$JOB.sh $DOCERN
 	  $JOBSUBMIT $JOBDIR/$JOB.sh
       fi
       rm tmp.txt tmp2.txt

@@ -37,6 +37,7 @@ namespace ic {//namespace
     input_params_ = "filelists/Apr04/ParamsApr04.dat";
     sample_name_= "test";
     input_met_ = "metNoMuons";
+    dijet_label_ = "jjLeadingCandidates";
     trg_weight_file_="data/scale_factors/DataMCWeight_53X_v1.root";
     Alumi_=-1;
     BClumi_=-1;
@@ -65,6 +66,7 @@ namespace ic {//namespace
  std::cout << "Do ID & iso weight errors up or down?: \t\t" << do_idiso_errupordown_ <<std::endl;
     
     std::cout << "Input MET for MET HLT:  \t\t" << input_met_ << std::endl;
+    std::cout << "dijet Label: " << dijet_label_ << std::endl;
     std::cout << "Note: Input MET for MET L1 is always metNoMuons." << std::endl;
 
     //Making output histograms
@@ -392,7 +394,7 @@ namespace ic {//namespace
     double jet2pt=0.;
 
     //get 2 leading jets
-    std::vector<CompositeCandidate *> const& dijet_vec = event->GetPtrVec<CompositeCandidate>("jjLeadingCandidates");
+    std::vector<CompositeCandidate *> const& dijet_vec = event->GetPtrVec<CompositeCandidate>(dijet_label_);
     if (dijet_vec.size() > 0) {
       
       CompositeCandidate const* dijet = dijet_vec.at(0);
