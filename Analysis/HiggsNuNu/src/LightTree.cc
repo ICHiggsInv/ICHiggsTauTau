@@ -36,18 +36,26 @@ namespace ic {
     jet1_pt_ = 0;
     jet2_pt_ = 0;
     jet3_pt_=-1;
+    jet4_pt_=-1;
     jet1_E_ = 0;
     jet2_E_ = 0;
     jet3_E_ = 0;
     jet1_eta_ = 0;
     jet2_eta_ = 0;
     jet3_eta_ = 0;
+    jet4_eta_ = 0;
     jet1_phi_ = 0;
     jet2_phi_ = 0;
     jet3_phi_ = 0;
+    jet4_phi_ = 0;
     jet1_csv_ = 0;
     jet2_csv_ = 0;
     jet3_csv_ = 0;
+    jet4_csv_ = 0;
+    jet1_pdgid_ = 0;
+    jet2_pdgid_ = 0;
+    jet3_pdgid_ = 0;
+    jet4_pdgid_ = 0;
     dijet_M_ = 0;
     dijet_deta_ = 0;
     dijet_sumeta_ = 0;
@@ -83,6 +91,7 @@ namespace ic {
     dijetmetnomu_ptfraction_ = 0;
     jet1metnomu_scalarprod_ = 0;
     jet2metnomu_scalarprod_ = 0;
+    n_jets_ = 0;
     n_jets_cjv_30_ = 0;
     n_jets_cjv_20EB_30EE_ = 0;
     cjvjetpt_=-1;
@@ -139,18 +148,26 @@ namespace ic {
     outputTree_->Branch("jet1_pt",&jet1_pt_);
     outputTree_->Branch("jet2_pt",&jet2_pt_);
     outputTree_->Branch("jet3_pt",&jet3_pt_);
+    outputTree_->Branch("jet4_pt",&jet4_pt_);
     outputTree_->Branch("jet1_E",&jet1_E_);
     outputTree_->Branch("jet2_E",&jet2_E_);
     outputTree_->Branch("jet3_E",&jet3_E_);
     outputTree_->Branch("jet1_eta",&jet1_eta_);
     outputTree_->Branch("jet2_eta",&jet2_eta_);
     outputTree_->Branch("jet3_eta",&jet3_eta_);
+    outputTree_->Branch("jet4_eta",&jet4_eta_);
     outputTree_->Branch("jet1_phi",&jet1_phi_);
     outputTree_->Branch("jet2_phi",&jet2_phi_);
     outputTree_->Branch("jet3_phi",&jet3_phi_);
+    outputTree_->Branch("jet4_phi",&jet4_phi_);
     outputTree_->Branch("jet1_csv",&jet1_csv_);
     outputTree_->Branch("jet2_csv",&jet2_csv_);
     outputTree_->Branch("jet3_csv",&jet3_csv_);
+    outputTree_->Branch("jet4_csv",&jet4_csv_);
+    outputTree_->Branch("jet1_pdgid",&jet1_pdgid_);
+    outputTree_->Branch("jet2_pdgid",&jet2_pdgid_);
+    outputTree_->Branch("jet3_pdgid",&jet3_pdgid_);
+    outputTree_->Branch("jet4_pdgid",&jet4_pdgid_);
     outputTree_->Branch("dijet_M",&dijet_M_);
     outputTree_->Branch("dijet_deta",&dijet_deta_);
     outputTree_->Branch("dijet_sumeta",&dijet_sumeta_);
@@ -186,6 +203,7 @@ namespace ic {
     outputTree_->Branch("dijetmetnomu_ptfraction",&dijetmetnomu_ptfraction_);
     outputTree_->Branch("jet1metnomu_scalarprod",&jet1metnomu_scalarprod_);
     outputTree_->Branch("jet2metnomu_scalarprod",&jet2metnomu_scalarprod_);
+    outputTree_->Branch("n_jets",&n_jets_);
     outputTree_->Branch("n_jets_cjv_30",&n_jets_cjv_30_);
     outputTree_->Branch("n_jets_cjv_20EB_30EE",&n_jets_cjv_20EB_30EE_);
     outputTree_->Branch("cjvjetpt",&cjvjetpt_);
@@ -281,6 +299,7 @@ namespace ic {
     nvetoelectrons_=vetoelectrons.size();
     nselelectrons_=selelectrons.size();
     ntaus_=taus.size();
+    n_jets_ = jets.size();
 
     std::sort(selmuons.begin(), selmuons.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
     std::sort(selelectrons.begin(), selelectrons.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
@@ -373,6 +392,7 @@ namespace ic {
       jet2_eta_ = jet2->eta();
       jet1_phi_ = jet1->phi();
       jet2_phi_ = jet2->phi();
+
       dijet_M_ = dijet->M();
       dijet_deta_ = fabs(jet1->eta() - jet2->eta());
       dijet_sumeta_ = jet1->eta() + jet2->eta();
@@ -437,37 +457,56 @@ namespace ic {
       jet3_pt_=-1;
       jet3_eta_=-10000;
       jet3_phi_=-10000;
+      jet4_pt_=-1;
+      jet4_eta_=-10000;
+      jet4_phi_=-10000;
       cjvjetpt_=-1;
-      if (jets.size() > 2) {
+      jet1_pdgid_ = 0;
+      jet2_pdgid_ = 0;
+      jet3_pdgid_ = 0;
+      jet4_pdgid_ = 0;
+      if (jets.size() >= 2) {
 	for (unsigned i = 0; i < jets.size(); ++i) {
 	  if(jets[i]->id()==jet1->id()){
 	    jet1_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	    if(!is_data_) jet1_pdgid_ = jets[i]->parton_flavour();
+
 	  }
 	  if(jets[i]->id()==jet2->id()){
 	    jet2_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	    if(!is_data_) jet2_pdgid_ = jets[i]->parton_flavour();
 	  }
 
-
-	  bool isInCentralGap = fabs(jets[i]->eta())<4.7 && jets[i]->eta() > eta_low && jets[i]->eta() < eta_high;
-	  double tmppt=jets[i]->pt();
-	  if(isInCentralGap&&(tmppt>cjvjetpt_)){
-	    cjvjetpt_=tmppt;
+	  if (jets.size() >2){//if more than 2
+	    bool isInCentralGap = fabs(jets[i]->eta())<4.7 && jets[i]->eta() > eta_low && jets[i]->eta() < eta_high;
+	    double tmppt=jets[i]->pt();
+	    if(isInCentralGap&&(tmppt>cjvjetpt_)){
+	      cjvjetpt_=tmppt;
+	    }
+	    if(tmppt>jet3_pt_&&(jets[i]->id()!=jet1->id())&&(jets[i]->id()!=jet2->id())){
+	      jet3_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	      jet3_pt_=tmppt;
+	      jet3_eta_=jets[i]->eta();
+	      jet3_phi_=jets[i]->phi();
+	      if (!is_data_) jet3_pdgid_ = jets[i]->parton_flavour();
+	    }
+	    if(tmppt>jet4_pt_ && tmppt<jet3_pt_ &&(jets[i]->id()!=jet1->id())&&(jets[i]->id()!=jet2->id())){
+	      jet4_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	      jet4_pt_=tmppt;
+	      jet4_eta_=jets[i]->eta();
+	      jet4_phi_=jets[i]->phi();
+	      if (!is_data_) jet4_pdgid_ = jets[i]->parton_flavour();
+	    }
+	    if (jets[i]->pt() > 30.0 && isInCentralGap){
+	      ++n_jets_cjv_30_;
+	    }
+	    if ( ((jets[i]->eta()<2.4 && jets[i]->pt() > 20.0) ||
+		  (jets[i]->eta()>=2.4 && jets[i]->pt() > 30.0)) && 
+		 isInCentralGap){
+	      ++n_jets_cjv_20EB_30EE_;
+	    }
 	  }
-	  if(tmppt>jet3_pt_&&(jets[i]->id()!=jet1->id())&&(jets[i]->id()!=jet2->id())){
-	    jet3_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
-	    jet3_pt_=tmppt;
-	    jet3_eta_=jets[i]->eta();
-	    jet3_phi_=jets[i]->phi();
-	  }
-	  if (jets[i]->pt() > 30.0 && isInCentralGap){
-	    ++n_jets_cjv_30_;
-	  }
-	  if ( ((jets[i]->eta()<2.4 && jets[i]->pt() > 20.0) ||
-		(jets[i]->eta()>=2.4 && jets[i]->pt() > 30.0)) && 
-	       isInCentralGap){
-	    ++n_jets_cjv_20EB_30EE_;
-	  }
-	}
+	}//if more than 2
       }
       static unsigned processed = 0;
       //IF PASSES CUTS FILL TREE
