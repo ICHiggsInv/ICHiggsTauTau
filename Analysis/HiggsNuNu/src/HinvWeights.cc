@@ -42,6 +42,10 @@ namespace ic {//namespace
     Alumi_=-1;
     BClumi_=-1;
     Dlumi_=-1;
+    tighteleweight = 0;
+    tightmuweight = 0;
+    vetoeleweight = 0;
+    vetomuweight = 0;
   }
 
   HinvWeights::~HinvWeights() {
@@ -69,12 +73,48 @@ namespace ic {//namespace
     std::cout << "dijet Label: " << dijet_label_ << std::endl;
     std::cout << "Note: Input MET for MET L1 is always metNoMuons." << std::endl;
 
+    //reset all vectors in case module is run several times
+    hist_trigSF_METL1vec.clear();
+    hist_trigSF_METHLTvec.clear();
+    hist_trigSF_MjjHLTvec.clear();
+    hist_trigSF_JetHLTvec.clear();
+    func_trigSF_METL1vec.clear();
+    func_trigSF_METHLTvec.clear();
+    func_trigSF_MjjHLTvec.clear();
+    func_trigSF_JetHLTvec.clear();
+    
+    hist_trigSF_METL1 = 0;
+    hist_trigSF_METHLT = 0;
+    hist_trigSF_MjjHLT = 0;
+    hist_trigSF_JetHLT = 0;
+    
+    hist_trigSF_3D.clear();
+    
+    lumixsweight=1;
+    
+    eTight_idisoSF_.clear();
+    eVeto_idisoDataEff_.clear();
+    eVeto_idisoMCEff_.clear();
+    muTight_idSF_.clear();
+    muTight_isoSF_.clear();
+    muVeto_idDataEff_.clear();
+    muVeto_isoDataEff_.clear();
+    muVeto_idMCEff_.clear();
+    muVeto_isoMCEff_.clear();
+    muTight_idisoSF_.clear();
+    muVeto_idisoDataEff_.clear();
+    muVeto_idisoMCEff_.clear();
+
     //Making output histograms
     TFileDirectory const& dir = fs_->mkdir("leptoneffweights");
-    tighteleweight = dir.make<TH1F>("tighteleweight","tighteleweight",2000,0.,2.);
-    tightmuweight  = dir.make<TH1F>("tightmuweight","tightmuweight",2000,0.,2.);
-    vetoeleweight = dir.make<TH1F>("vetoeleweight","vetoeleweight",2000,0.,2.);
-    vetomuweight  = dir.make<TH1F>("vetomuweight","vetomuweight",2000,0.,2.);
+    if (!tighteleweight) tighteleweight = dir.make<TH1F>("tighteleweight","tighteleweight",2000,0.,2.);
+    else tighteleweight->Reset();
+    if (!tightmuweight) tightmuweight  = dir.make<TH1F>("tightmuweight","tightmuweight",2000,0.,2.);
+    else tightmuweight->Reset();
+    if (!vetoeleweight) vetoeleweight = dir.make<TH1F>("vetoeleweight","vetoeleweight",2000,0.,2.);
+    else vetoeleweight->Reset();
+    if (!vetomuweight) vetomuweight  = dir.make<TH1F>("vetomuweight","vetomuweight",2000,0.,2.);
+    else vetomuweight->Reset();
 
     if(do_lumixs_weights_){
       //Get Sample name file
@@ -85,17 +125,18 @@ namespace ic {//namespace
 	std::cout<<"Non-standard sample name format not doing lumixs weight"<<std::endl;
       }
       else{
-	sample_name_.erase(found,5);
-	std::cout << "Sample Name: "<<sample_name_<<std::endl;
+	std::string lTmpName = sample_name_;
+	lTmpName.erase(found,5);
+	std::cout << "Sample Name: "<<lTmpName<<std::endl;
 
 	//Get lumi xs and events from params file
 	SimpleParamParser parser;
 	std::cout << "** Parsing parameter file... **" << input_params_ << std::endl;
 	parser.ParseFile(input_params_);
 	std::cout<<"parsed"<<std::endl;
-	double xs=parser.GetParam<double>("XS_"+sample_name_);
+	double xs=parser.GetParam<double>("XS_"+lTmpName);
 	std::cout<<"got xs"<<std::endl;
-	double events=parser.GetParam<double>("EVT_"+sample_name_);
+	double events=parser.GetParam<double>("EVT_"+lTmpName);
 	std::cout<<"got events"<<std::endl;
 	double lumi=parser.GetParam<double>("LUMI_DATA");
 	std::cout<<"got lumi"<<std::endl;
