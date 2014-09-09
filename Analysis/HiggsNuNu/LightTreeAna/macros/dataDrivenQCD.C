@@ -51,10 +51,10 @@ struct Event {
 
 int dataDrivenQCD() {
 
-  std::string fileName = "../../output_lighttree/MET2012.root";//_MET-2012A-22Jan2013-v1.root";
+  std::string fileName = "../../output_lighttree/VBFPARKED.root";//_MET-2012A-22Jan2013-v1.root";
   //std::string fileName = "../../output/MC_Powheg-Htoinv-mH125.root";
 
-  std::string type = "DataMC_MET2012";
+  std::string type = "DataMC_PARKED";
   //std::string type = "VBFH125";
 
   TFile *data = TFile::Open(fileName.c_str(), "update");
@@ -77,7 +77,11 @@ int dataDrivenQCD() {
   unsigned lumi;
   unsigned event;
   double passtrigger;
+  double passparkedtrigger1;
+  double passparkedtrigger2;
+  double l1met;
   double jet1_pt;
+  double jet3_pt;
   double dijet_M;
   double jet1_eta;
   double jet2_eta;
@@ -107,7 +111,11 @@ int dataDrivenQCD() {
     tree[iT]->SetBranchAddress("lumi",&lumi);
     tree[iT]->SetBranchAddress("event",&event);
     tree[iT]->SetBranchAddress("passtrigger",&passtrigger);
+    tree[iT]->SetBranchAddress("passparkedtrigger1",&passparkedtrigger1);
+    tree[iT]->SetBranchAddress("passparkedtrigger2",&passparkedtrigger2);
+    tree[iT]->SetBranchAddress("l1met",&l1met);
     tree[iT]->SetBranchAddress("jet1_pt",&jet1_pt);
+    tree[iT]->SetBranchAddress("jet3_pt",&jet3_pt);
     tree[iT]->SetBranchAddress("dijet_M",&dijet_M);
     tree[iT]->SetBranchAddress("jet1_eta",&jet1_eta);
     tree[iT]->SetBranchAddress("jet2_eta",&jet2_eta);
@@ -122,7 +130,9 @@ int dataDrivenQCD() {
     for (int iE(0); iE<nEntries[iT]; ++iE){//loop on entries
       tree[iT]->GetEntry(iE);
       is_dupl = 0;
-      if (passtrigger==1 && jet1_eta*jet2_eta<0 && dijet_M>=600 && jet1_pt>50 && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
+      bool passtrig = ((run>=190456 && run<=193621 &&passtrigger==1) || (run>=193833 && run<=196531 && passparkedtrigger1==1) ||(run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40;//parked
+      bool passpT = (iT==0 && jet1_pt > 50) || iT>0;
+    if (passtrig && passpT && jet1_eta*jet2_eta < 0 && dijet_M>=600 && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -150,10 +160,11 @@ int dataDrivenQCD() {
     }//loop on entries
   }//loop on trees
 
+
   std::cout << " Duplicated/passing events: " << std::endl
-	    << " -- J1J2 = " << duplicateJ1J2 << "/" << passJ1J2 << std::endl
-	    << " -- J1J3 = " << duplicateJ1J3 << "/" << passJ1J3 << std::endl
-	    << " -- J2J3 = " << duplicateJ2J3 << "/" << passJ2J3 << std::endl
+	    << " j1j2 & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
+	    << " j1j3 & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
+	    << " j2j3 & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
     ;
 
   const unsigned nVars = 12;
@@ -256,10 +267,14 @@ int dataDrivenQCD() {
 
     for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
       
-      //std::string selection = "jet1_pt > 50 && dijet_M > 600 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
-      //std::string selection = "is_dupl==0 && jet1_pt > 50 && dijet_M > 600 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0"; 
-      std::string selection = 
-	"is_dupl==0 && passtrigger==1 && jet1_eta*jet2_eta<0 && dijet_M>=600 && jet1_pt>50 && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
+      std::ostringstream selection;
+      std::string passtrig = "((run>=190456 && run<=193621 && passtrigger==1) || (run>=193833 && run<=196531 &&passparkedtrigger1==1) || (run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40";
+      std::string passpT = "jet1_pt > 50";
+
+      selection << "is_dupl==0 && ";
+      selection << passtrig <<" && ";
+      if (iT==0) selection << passpT << " && ";
+      selection << "jet1_eta*jet2_eta<0 && dijet_M>=600 && (jet1_pt>50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
       
       lname.str("");
       lname << "p_" << vars[iV] << "_" << label[iT];
@@ -271,7 +286,7 @@ int dataDrivenQCD() {
       //hist[iV][iT]->Sumw2();
       lname.str("");
       lname << vars[iV] << ">>p_" << vars[iV] << "_" << label[iT];
-      tree[iT]->Draw(lname.str().c_str(),selection.c_str(),"");
+      tree[iT]->Draw(lname.str().c_str(),selection.str().c_str(),"");
 
       hist[iV][iT]->SetLineColor(iT+1);
       if (iT==0) {
@@ -305,20 +320,20 @@ int dataDrivenQCD() {
     if (histsum[iV]->GetMaximum() > lmaxY) lmaxY =histsum[iV]->GetMaximum();
     if (histMC[iV]->GetMaximum() > lmaxY) lmaxY =histMC[iV]->GetMaximum();
     //if (histQCD[iV]->GetMaximum() > lmaxY) lmaxY =histQCD[iV]->GetMaximum();
-    if (histDataCheck[iV]->GetMaximum() > lmaxY) lmaxY =histDataCheck[iV]->GetMaximum();
+    //if (histDataCheck[iV]->GetMaximum() > lmaxY) lmaxY =histDataCheck[iV]->GetMaximum();
 
     TLegend *leg = new TLegend(0.75,0.75,0.99,0.99);
     leg->SetFillColor(10);
-    leg->AddEntry(hist[iV][0],"MET","P");
+    leg->AddEntry(hist[iV][0],"PARKED","P");
     hist[iV][0]->SetMaximum(lmaxY*1.1);
     hist[iV][0]->Draw("PE");
     histsum[iV]->Draw("histsame");
     histMC[iV]->Draw("histsame");
     //histQCD[iV]->Draw("histsame");
-    histDataCheck[iV]->Draw("PEsame");
-    leg->AddEntry(histsum[iV],"dataQCD","F");
-    leg->AddEntry(histMC[iV],"MC","F");
-    leg->AddEntry(histDataCheck[iV],"PARKED","F");
+    //histDataCheck[iV]->Draw("PEsame");
+    leg->AddEntry(histsum[iV],"j1j3+j2j3","F");
+    leg->AddEntry(histMC[iV],"V+Top+VV","F");
+    //leg->AddEntry(histDataCheck[iV],"PARKED","F");
     leg->Draw("same");
 
     //draw normalised
@@ -354,7 +369,7 @@ int dataDrivenQCD() {
     histQCD[iV]->Draw("histsame");
     //histDataCheck[iV]->Draw("Lsame");
     //leg2->AddEntry(histsum[iV],"j1j3+j2j3","F");
-    leg2->AddEntry(histQCD[iV],"VBF QCD","F");
+    leg2->AddEntry(histQCD[iV],"MC VBFQCD","F");
     //leg2->AddEntry(histDataCheck[iV],"j1j2 data","F");
     leg2->Draw("same");
 
