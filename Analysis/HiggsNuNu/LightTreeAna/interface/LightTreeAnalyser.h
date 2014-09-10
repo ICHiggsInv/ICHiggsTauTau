@@ -15,6 +15,7 @@ namespace ic{
     std::vector<ic::LTModule *> modulelist_;
     LTFiles filemanager_;    
     bool print_module_list_;
+    std::string treeName_;
   public:
     TFile* fs;
     LTAnalyser(std::string);
@@ -25,6 +26,7 @@ namespace ic{
     LTAnalyser AddFiles(std::string);
     void SetInFolder(std::string);
     void SetInputParams(std::string);
+    void SetTreeName(std::string treeName="LightTree");
 
     bool PostModule(int);
     int RunAnalysis();

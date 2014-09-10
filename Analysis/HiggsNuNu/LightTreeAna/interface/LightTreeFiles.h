@@ -18,11 +18,13 @@ namespace ic{
     protected:
     TFile * tfile_;
     TTree * tree_;
+    std::string treeName_;
     std::vector<std::pair<std::string,std::string> > friendTrees;
     public:
     LTFile();
     LTFile(std::string,std::string);
     LTFile(std::string,std::string,std::string);
+    void SetTreeName(std::string treeName="LightTree");
     int Open(std::string);
     int Close();
     int AddFriend(TTree*);
@@ -38,6 +40,8 @@ namespace ic{
     protected:								
     std::map<std::string,LTFile> files_;					
     std::map<std::string,std::vector<std::string> > setlists_;
+    std::string treeName_;
+
     public:
     LTFiles();
     LTFiles(std::string,std::string);
@@ -52,6 +56,7 @@ namespace ic{
     void AddFiles(std::vector<std::string>,std::vector<std::string>);
     void AddFile(LTFile);
     void AddFiles(std::vector<LTFile>);
+    void SetTreeName(std::string treeName="LightTree");
 
     LTFile GetFile(std::string);
     std::string GetPath(std::string);

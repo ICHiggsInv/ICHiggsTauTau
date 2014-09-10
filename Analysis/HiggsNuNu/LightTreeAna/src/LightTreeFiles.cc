@@ -7,18 +7,25 @@
 
 namespace ic{
   LTFile::LTFile(){
+    treeName_ = "LightTree";
   };
 
   LTFile::LTFile(std::string name, std::string path){
     name_=name;
     path_=path;
     set_="";
+    treeName_ = "LightTree";
   };
   
   LTFile::LTFile(std::string name, std::string set, std::string path){
     name_=name;
     set_=set;
     path_=path;
+    treeName_ = "LightTree";
+  };
+
+  void LTFile::SetTreeName(std::string treeName){
+    treeName_ = treeName;
   };
 
   int LTFile::Open(std::string infolder){
@@ -30,7 +37,11 @@ namespace ic{
       return 1;
     }
     tfile_ = tmp;
-    tree_=(TTree *)tfile_->Get("LightTree");
+    tree_=(TTree *)tfile_->Get(treeName_.c_str());
+    if (!tree_) {
+      std::cerr << "Warning, tree " << treeName_ << " could not be opened." << std::endl;
+      return 1;
+    }
     tree_->SetEstimate(1000);
     if(friendTrees.size()!=0){
       for(unsigned iFriend=0;iFriend<friendTrees.size();iFriend++){
@@ -95,18 +106,22 @@ namespace ic{
 
 
   LTFiles::LTFiles(){
+    treeName_ = "LightTree";
   };
 
   LTFiles::LTFiles(std::string name, std::string set, std::string path){
     files_[name]=LTFile(name,set,path);
     setlists_[set].push_back(name);
+    treeName_ = "LightTree";
   };
 
   LTFiles::LTFiles(std::string name, std::string path){
     files_[name]=LTFile(name,path);
+    treeName_ = "LightTree";
   };
   
   LTFiles::LTFiles(std::vector<std::string> names,std::vector<std::string> sets, std::vector<std::string> paths){
+    treeName_ = "LightTree";
     if(names.size()!=sets.size() || sets.size()!=paths.size()) std::cout<<"Error different numbers of names, sets and paths making empty Files object"<<std::endl;
     else{
       for(unsigned iname=0;iname<names.size();iname++){
@@ -117,6 +132,7 @@ namespace ic{
   };
 
   LTFiles::LTFiles(LTFile file){
+    treeName_ = "LightTree";
     files_[file.name()]=file;
     if(file.set()!=""){
       setlists_[file.set()].push_back(file.name());
@@ -124,6 +140,7 @@ namespace ic{
   };
   
   LTFiles::LTFiles(std::vector<LTFile> files){
+    treeName_ = "LightTree";
     for(unsigned ifile=0;ifile<files.size();ifile++){
       files_[files[ifile].name()]=files[ifile];
       if(files[ifile].set()!=""){
@@ -175,6 +192,10 @@ namespace ic{
       }
     }
   }
+
+  void LTFiles::SetTreeName(std::string treeName){
+    treeName_ = treeName;
+  };
 
   LTFile LTFiles::GetFile(std::string filename){
     if (files_.count(filename)>0){
@@ -240,6 +261,7 @@ namespace ic{
 
   int LTFiles::OpenFile(std::string filename){
     if(files_.count(filename)>0){
+      files_[filename].SetTreeName(treeName_);
       if(files_[filename].Open(infolder_)==1){
 	std::cout<<"other stuff";
 	return 1;
@@ -255,6 +277,7 @@ namespace ic{
   int LTFiles::OpenSet(std::string setname){
     if(setlists_.count(setname)>0){
       for(auto iter=setlists_[setname].begin(); iter!=setlists_[setname].end();++iter){
+	files_[*iter].SetTreeName(treeName_);
 	if((files_[*iter].Open(infolder_))==1){
 	  std::cout<<"stuff";
 	  return 1;
@@ -271,6 +294,7 @@ namespace ic{
 
   int LTFiles::OpenAll(){
     for(auto iter=files_.begin();iter!=files_.end();iter++){
+      iter->second.SetTreeName(treeName_);
       if((iter->second.Open(infolder_))==1)return 1;
     }
     return 0;

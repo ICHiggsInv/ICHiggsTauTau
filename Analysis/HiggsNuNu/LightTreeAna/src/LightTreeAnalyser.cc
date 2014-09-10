@@ -11,14 +11,21 @@ namespace ic{
     verbosity_=1;
     outputname_=outputname;
     fs=new TFile((outputname_).c_str(),"RECREATE");
+    treeName_="LightTree";
   };
   
   LTAnalyser::LTAnalyser(std::string outputname, int verbosity){
     verbosity_=verbosity;
     outputname_=outputname;
     fs=new TFile((outputname_).c_str(),"RECREATE");
+    treeName_="LightTree";
   };
   
+  void LTAnalyser::SetTreeName(std::string treeName){
+    treeName_ = treeName;
+    filemanager_.SetTreeName(treeName_);
+  };
+
   LTAnalyser LTAnalyser::AddModule(LTModule *module){
     modulelist_.push_back(module);
     return *this;

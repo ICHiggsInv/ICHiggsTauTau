@@ -34,6 +34,7 @@ int main(int argc, char* argv[]){
   std::string filelist;
   std::string basesel;
   std::string channel;
+  std::string treename;
 
   po::options_description preconfig("Configuration"); 
   preconfig.add_options()("cfg",po::value<std::string>(&cfg)->required());
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]){
     ("input_params,p",           po::value<std::string>(&inputparams)->default_value("../filelists/Dec18/ParamsDec18test.dat"))
     ("filelist,f",               po::value<std::string>(&filelist)->default_value("filelists/filelist.dat"))
     ("basesel",                  po::value<std::string>(&basesel)->default_value("jet1_eta*jet2_eta<0 && jet1_eta<4.7 && jet2_eta<4.7 && dijet_M>=600&&jet1_pt>50&&dijet_deta>3.6&& jet2_pt>60&&metnomuons>60&&metnomu_significance>3&&jetmetnomu_mindphi>1.5"))
+    ("treename",                 po::value<std::string>(&treename)->default_value("LightTree"))
     ("channel",                  po::value<std::string>(&channel)->default_value("nunu"));
 
   po::store(po::command_line_parser(argc, argv).options(config).allow_unregistered().run(), vm);
@@ -61,6 +63,7 @@ int main(int argc, char* argv[]){
   ##########################################*/
 
   LTAnalyser* analysis = new LTAnalyser(outputname);
+  analysis->SetTreeName(treename);
 
   analysis->AddFiles(filelist);
   std::cout<<"Taking input from: "<<inputfolder<<std::endl;
@@ -103,24 +106,30 @@ int main(int argc, char* argv[]){
 
   std::vector<std::string> shape;
   //shape.push_back("BDT(12,-1.,0.2)");
-  shape.push_back("jet2_pt(27,30.,300.)");
   shape.push_back("jet1_pt(27,30.,300.)");
+  shape.push_back("jet2_pt(27,30.,300.)");
+  shape.push_back("jet3_pt(27,30.,300.)");
   shape.push_back("metnomuons(25,50.,300.)");
-  shape.push_back("l1met(20,00.,200.)");
+  //shape.push_back("l1met(20,00.,200.)");
   shape.push_back("dijet_M(14,600.,2000.)");
   shape.push_back("jetmetnomu_mindphi(32,0.,3.2)");
   shape.push_back("metnomu_significance(40,0.,8.)");
-  shape.push_back("dijet_sumeta(50,-10,10)");
+  //shape.push_back("dijet_sumeta(50,-10,10)");
   shape.push_back("ht(50,0,1000)");
-  shape.push_back("jetunclet_mindphi(32,0,3.2)");
-  shape.push_back("metnomuunclet_dphi(32,0,3.2)");
+  //shape.push_back("jetunclet_mindphi(32,0,3.2)");
+  //shape.push_back("metnomuunclet_dphi(32,0,3.2)");
   shape.push_back("dijetmetnomu_scalarSum_pt(70,0,1400)");
   shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");
-  shape.push_back("n_jets_cjv_30(5,0,5)");
-  shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");
+  shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");
+  shape.push_back("n_jets(10,0,10)");
+  shape.push_back("n_jets_cjv_30(10,0,10)");
+  //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");
   shape.push_back("dijet_dphi(30,0.,3.)");
   shape.push_back("dijet_deta(18,3.4,7.)");
-  shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");
+  shape.push_back("jet1_csv(50,0,1.)");
+  shape.push_back("jet2_csv(50,0,1.)");
+  shape.push_back("jet3_csv(50,0,1.)");
+
   std::string dataset="PARKEDPLUSA";
   std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
   std::string sigcat;
