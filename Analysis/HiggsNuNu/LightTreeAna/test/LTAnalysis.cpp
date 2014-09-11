@@ -148,7 +148,6 @@ int main(int argc, char* argv[]){
   else if(channel=="munu"){//wmu
     sigcat="nselmuons==1&&nvetomuons==1&&nvetoelectrons==0";
     zextrasigcat="&&nselmuons==1&&nvetomuons==3&&nvetoelectrons==0&&m_mumu>60&&m_mumu<120";//wmu
-
   }
   else if(channel=="enu"){//wel
     sigcat="nselelectrons==1&&nvetomuons==0&&nvetoelectrons==1";
@@ -271,6 +270,7 @@ int main(int argc, char* argv[]){
     .set_contdataextrasel(dataextrasel)
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
     .set_contcat("nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120")
+
     .set_sigmainccontewk(303)
     .set_sigmainccontqcd(3503700./3)
     .set_sigmaincsigewk(460*3)
@@ -609,9 +609,11 @@ int main(int argc, char* argv[]){
   //analysis->AddModule(&normplots);
   analysis->AddModule(&wmunu);
   analysis->AddModule(&wenu);
-  analysis->AddModule(&wtaunu);  
-  //analysis->AddModule(&wtaunuraw);  
-  analysis->AddModule(&zmumu);
+  analysis->AddModule(&wtaunu);
+  if(channel!="mumu"){
+    analysis->AddModule(&zmumu);
+  }
+  else analysis->AddModule(&zmumuinzcont);
   analysis->AddModule(&QCD);
   //analysis->AddModule(&QCDraw);
   //analysis->AddModule(&wmunuraw);
@@ -620,7 +622,6 @@ int main(int argc, char* argv[]){
   //analysis->AddModule(&QCDraw);
    //analysis->AddModule(&zmumuraw);
    //analysis->AddModule(&znunuraw);
-  //analysis->AddModule(&zmumuinzcont);
   analysis->AddModule(&vv);
   analysis->AddModule(&wgamma);
   analysis->AddModule(&top);
