@@ -96,7 +96,7 @@ int OneCollCompositeProducer<T>::Execute(TreeEvent *event) {
     cand_ref.AddCandidate(candidate_name_first_, pairs[select_pair_].first);
     cand_ref.AddCandidate(candidate_name_second_, pairs[select_pair_].second);
   }
-  else {
+  else if (select_pair_==-1){
     for (unsigned i = 0; i < pairs.size(); ++i) {
       vec_out.push_back(CompositeCandidate());
       CompositeCandidate & cand_ref = vec_out.back();

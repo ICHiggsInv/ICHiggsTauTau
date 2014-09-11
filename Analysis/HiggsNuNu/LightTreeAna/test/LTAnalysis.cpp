@@ -105,30 +105,33 @@ int main(int argc, char* argv[]){
     .set_sets(setswithfriends);
 
   std::vector<std::string> shape;
+  std::vector<std::string> histTitle;
   //shape.push_back("BDT(12,-1.,0.2)");
-  shape.push_back("jet1_pt(27,30.,300.)");
-  shape.push_back("jet2_pt(27,30.,300.)");
-  shape.push_back("jet3_pt(27,30.,300.)");
-  shape.push_back("metnomuons(25,50.,300.)");
-  //shape.push_back("l1met(20,00.,200.)");
-  shape.push_back("dijet_M(14,600.,2000.)");
-  shape.push_back("jetmetnomu_mindphi(32,0.,3.2)");
-  shape.push_back("metnomu_significance(40,0.,8.)");
-  //shape.push_back("dijet_sumeta(50,-10,10)");
-  shape.push_back("ht(50,0,1000)");
-  //shape.push_back("jetunclet_mindphi(32,0,3.2)");
-  //shape.push_back("metnomuunclet_dphi(32,0,3.2)");
-  shape.push_back("dijetmetnomu_scalarSum_pt(70,0,1400)");
-  shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");
-  shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");
-  shape.push_back("n_jets(10,0,10)");
-  shape.push_back("n_jets_cjv_30(10,0,10)");
-  //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");
-  shape.push_back("dijet_dphi(30,0.,3.)");
-  shape.push_back("dijet_deta(18,3.4,7.)");
-  shape.push_back("jet1_csv(50,0,1.)");
-  shape.push_back("jet2_csv(50,0,1.)");
-  shape.push_back("jet3_csv(50,0,1.)");
+  shape.push_back("jet1_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j1} (GeV);entries");
+  shape.push_back("jet2_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j2} (GeV);entries");
+  shape.push_back("jet3_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j3} (GeV);entries");
+  shape.push_back("metnomuons(25,50.,300.)"); histTitle.push_back(";METnoMu (GeV);entries");
+  //shape.push_back("l1met(20,00.,200.)");histTitle.push_back(";L1MET (GeV);entries");
+  shape.push_back("dijet_M(14,600.,2000.)");histTitle.push_back(";M_{jj} (GeV);entries");
+  shape.push_back("jetmetnomu_mindphi(32,1.5,3.2)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
+  shape.push_back("metnomu_significance(40,3.,8.)");histTitle.push_back(";METnoMu/#sigma(METnoMu);entries");
+  //shape.push_back("dijet_sumeta(50,-10,10)");histTitle.push_back(";#eta_{j1}+#eta_{j2};entries");
+  shape.push_back("ht(50,0,1000)");histTitle.push_back(";H_{T} (GeV);entries");
+  //shape.push_back("jetunclet_mindphi(32,0,3.2)");histTitle.push_back(";min #Delta#phi(j,E_{T}^{uncl});entries");
+  //shape.push_back("metnomuunclet_dphi(32,0,3.2)");histTitle.push_back(";#Delta#phi(METnoMu,E_{T}^{uncl};entries");
+  shape.push_back("dijetmetnomu_scalarSum_pt(70,0,1400)");histTitle.push_back(";p_{T}^{jeta}+p_{T}^{jetb}+METnoMu;entries");
+  shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");histTitle.push_back(";p_{T}(#vec{ja}+#vec{jb}+#vec{METnoMu});entries");
+  shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");histTitle.push_back(";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu);entries");
+  shape.push_back("n_jets(10,0,10)");histTitle.push_back(";njets (30 GeV);entries");
+  shape.push_back("n_jets_cjv_30(10,0,10)");histTitle.push_back(";CJV jets (30 GeV);entries");
+  //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");histTitle.push_back(";CJV jets (20 GeV EB, 30 GeV EE);entries");
+  shape.push_back("dijet_dphi(30,0.,3.)");histTitle.push_back(";#Delta#phi_{jj};entries");
+  shape.push_back("dijet_deta(18,3.4,7.)");histTitle.push_back(";#Delta#eta_{jj};entries");
+  shape.push_back("jet1_csv(50,0,1.)");histTitle.push_back(";CSV (jet 1);entries");
+  shape.push_back("jet2_csv(50,0,1.)");histTitle.push_back(";CSV (jet 2);entries");
+  shape.push_back("jet3_csv(50,0,1.)");histTitle.push_back(";CSV (jet 3);entries");
+
+  assert(shape.size() == histTitle.size());
 
   std::string dataset="PARKEDPLUSA";
   std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
@@ -220,28 +223,28 @@ int main(int argc, char* argv[]){
   
   DataShape wmunuraw("wmunuraw");
   wmunuraw.set_dataset("WJets_munu")
-    .set_dirname("wmu")
+    .set_dirname("wmuraw")
     .set_shape(shape)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
   DataShape wenuraw("wenuraw");
   wenuraw.set_dataset("WJets_enu")
-    .set_dirname("wel")
+    .set_dirname("welraw")
     .set_shape(shape)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
   DataShape wtaunuraw("wtaunuraw");
   wtaunuraw.set_dataset("WJets_taunu")
-    .set_dirname("wtau")
+    .set_dirname("wtauraw")
     .set_shape(shape)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
   DataShape QCDraw("QCDraw");
   QCDraw.set_dataset("VBF-QCD")
-    .set_dirname("qcd")
+    .set_dirname("qcdraw")
     .set_shape(shape)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
@@ -326,16 +329,17 @@ int main(int argc, char* argv[]){
   wtaunu.set_sigmcset("WJets_taunu")
     .set_shape(shape)
     .set_dirname("wtau")
-    .set_contmcset("WJets_taunu")
+    .set_contmcset("WJets_munu")
     .set_contdataset(dataset)
     .set_contbkgset(Wcontbkgsets)
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
-    .set_contcat("ntaus>=1&&nvetoelectrons ==0 && nvetomuons==0")
-     .set_sigmcweight("total_weight_lepveto")
-     .set_contmcweight("total_weight_lepveto")
-     .set_contdataweight("weight_nolep");
+    .set_contcat("nvetoelectrons==0 && nvetomuons==1 && nselmuons==1")
+    //.set_contcat("ntaus>=1&&nvetoelectrons ==0 && nvetomuons==0")
+    .set_sigmcweight("total_weight_lepveto")
+    .set_contmcweight("total_weight_lepveto")
+    .set_contdataweight("weight_nolep");
 
   //QCDBKG
   std::vector<std::string> QCDcontbkgsets; //list of sets for ncbkg
@@ -356,7 +360,7 @@ int main(int argc, char* argv[]){
   QCDcontbkgextrafactordir.push_back("zvv");
   QCDcontbkgextrafactordir.push_back("wel");
   QCDcontbkgextrafactordir.push_back("wmu");
-  QCDcontbkgextrafactordir.push_back("wtau");
+  QCDcontbkgextrafactordir.push_back("");
   
   std::vector<int> QCDcontbkgisz;
   QCDcontbkgisz.push_back(0);
@@ -589,7 +593,8 @@ int main(int argc, char* argv[]){
   plotter.set_dirname("ControlPlots")
     .set_do_ratio(true)
     .set_elements(elementvec)
-    .set_shapes(shapevec);
+    .set_shapes(shapevec)
+    .set_histTitles(histTitle);
   
   
 
@@ -605,8 +610,10 @@ int main(int argc, char* argv[]){
   analysis->AddModule(&wmunu);
   analysis->AddModule(&wenu);
   analysis->AddModule(&wtaunu);  
+  //analysis->AddModule(&wtaunuraw);  
   analysis->AddModule(&zmumu);
   analysis->AddModule(&QCD);
+  //analysis->AddModule(&QCDraw);
   //analysis->AddModule(&wmunuraw);
   //analysis->AddModule(&wenuraw);
   //analysis->AddModule(&wtaunuraw);  

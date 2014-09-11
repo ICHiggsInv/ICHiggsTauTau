@@ -130,10 +130,11 @@ namespace ic{
     double ncdata = Integral(&contdatashape);
     double ncbkg = Integral(&contbkgshape);
 
-    std::cout<<"  ncmc: "<<ncmc<<", ncdata: "<<ncdata<<", ncbkg: "<<ncbkg<<std::endl;
 
     //Calculate weight
     double weight=(ncdata-ncbkg)/ncmc;
+    std::cout<<"  ncmc: "<<ncmc<<", ncdata: "<<ncdata<<", ncbkg: "<<ncbkg<<", weight: " << weight << std::endl;
+
     TVectorD weightvec(1);
     weightvec[0]=weight*sigcontextrafactor_;
     std::cout<<"  Getting signal MC shapes"<<std::endl;
