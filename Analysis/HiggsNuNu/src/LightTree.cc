@@ -308,7 +308,7 @@ namespace ic {
       }
     }
     //event must pass first part of selection
-    if (!passEventSel) return 0;
+    if (!passEventSel()) return 0;
 
     nvetomuons_=vetomuons.size();
     nselmuons_=selmuons.size();
@@ -405,45 +405,39 @@ namespace ic {
       
       //select jet pair
       if (do_qcd_){
-	//loop over all pairs, select ones passing presel
-	//then select pair with highest dphi_jj
-
-	std::vector< std::pair<unsigned,double> > dphivec;
-	for (unsigned iP(0); iP<dijet_vec.size();++iP){//loop on pairs
-	  CompositeCandidate const* dijet = dijet_vec.at(iP);
-	  Candidate const* jet1 = dijet->GetCandidate("jet1");
-	  Candidate const* jet2 = dijet->GetCandidate("jet2");
-	  ROOT::Math::PtEtaPhiEVector jet1vec = jet1->vector();
-	  ROOT::Math::PtEtaPhiEVector jet2vec = jet2->vector();
-	  double nomudphi1 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,metnomuvec));
-	  double nomudphi2 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet2vec,metnomuvec));
-
-	  dijet_deta_ = fabs(jet1->eta() - jet2->eta());;
-	  dijet_dphi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,jet2vec));
-	  if (passTreeSelection()){
-	    dphivec.push_back(std::pair<unsigned,double>(iP,dijet_dphi_));
-	  }//pass sel
-	}//loop on pairs
-	std::cout << " -- selected " << dphivec.size() << " pairs out of " << dijet_vec.size() << std::endl;
-	if (dphivec.size()>0) {//if pairs found passing presel
-	  //sort
-	  std::cout << " -- before sort -- " << std::endl;
-	  for (unsigned i(0);i<dphivec.size();++i){
-	    std::cout << i << " " << dphivec[i].first << " " << dphivec[i].second << std::endl;
-	  }
-	  std::sort(dphivec.begin(),dphivec.end(),bind(&std::pair<unsigned,double>::second, _1) > bind(&std::pair<unsigned,double>::second, _2));
-	  std::cout << " -- after sort -- " << std::endl;
-	  for (unsigned i(0);i<dphivec.size();++i){
-	    std::cout << i << " " << dphivec[i].first << " " << dphivec[i].second << std::endl;
-	  }
-	  //select
-	  idx=dphivec[0].first;
-	  if (idx==0){
-	    if (dphivec.size()>1) idx=dphivec[1].first;
-	    else return 0;//do not select leading pair for QCD: just exit
-	  }
-	}//if pairs found passing presel
-	else return 0;
+	//need minimum 2 to start with for the QCD !
+	if (dijet_vec.size()>1){
+	  //loop over all pairs, select ones passing presel
+	  //then select pair with highest dphi_jj
+	  
+	  std::vector< std::pair<unsigned,double> > dphivec;
+	  for (unsigned iP(0); iP<dijet_vec.size();++iP){//loop on pairs
+	    CompositeCandidate const* dijet = dijet_vec.at(iP);
+	    Candidate const* jet1 = dijet->GetCandidate("jet1");
+	    Candidate const* jet2 = dijet->GetCandidate("jet2");
+	    ROOT::Math::PtEtaPhiEVector jet1vec = jet1->vector();
+	    ROOT::Math::PtEtaPhiEVector jet2vec = jet2->vector();
+	    
+	    dijet_deta_ = fabs(jet1->eta() - jet2->eta());;
+	    dijet_dphi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,jet2vec));
+	    if (passTreeSelection()){
+	      dphivec.push_back(std::pair<unsigned,double>(iP,dijet_dphi_));
+	    }//pass sel
+	  }//loop on pairs
+	  //std::cout << " -- selected " << dphivec.size() << " pairs out of " << dijet_vec.size() << std::endl;
+	  if (dphivec.size()>0) {//if pairs found passing presel
+	    //sort
+	    std::sort(dphivec.begin(),dphivec.end(),bind(&std::pair<unsigned,double>::second, _1) > bind(&std::pair<unsigned,double>::second, _2));
+	    //select
+	    idx=dphivec[0].first;
+	    if (idx==0){
+	      if (dphivec.size()>1) idx=dphivec[1].first;
+	      else return 1;//do not select leading pair for QCD: just exit
+	    }
+	  }//if pairs found passing presel
+	  else return 1;
+	}
+	else return 1;
       }//do qcd
       
       CompositeCandidate const* dijet = dijet_vec.at(idx);
@@ -610,7 +604,7 @@ namespace ic {
   }
 
   bool LightTree::passTreeSelection(){
-    return passEventSel && passDijetSel;
+    return passEventSel() && passDijetSel();
   }
 
   int  LightTree::PostAnalysis(){
