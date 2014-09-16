@@ -78,6 +78,7 @@ namespace ic {
     jet2metnomu_dphi_ = 0;
     jetmet_mindphi_ = 0;
     jetmetnomu_mindphi_ = 0;
+    alljetsmetnomu_mindphi_ = 0;
     jetunclet_mindphi_ = 0;
     metunclet_dphi_ = 0;
     metnomuunclet_dphi_ = 0;
@@ -192,6 +193,7 @@ namespace ic {
     outputTree_->Branch("jet2metnomu_dphi",&jet2metnomu_dphi_);
     outputTree_->Branch("jetmet_mindphi",&jetmet_mindphi_);
     outputTree_->Branch("jetmetnomu_mindphi",&jetmetnomu_mindphi_);
+    outputTree_->Branch("alljetsmetnomu_mindphi",&alljetsmetnomu_mindphi_);
     outputTree_->Branch("jetunclet_mindphi",&jetunclet_mindphi_);
     outputTree_->Branch("metunclet_dphi",&metunclet_dphi_);
     outputTree_->Branch("metnomuunclet_dphi",&metnomuunclet_dphi_);
@@ -296,6 +298,18 @@ namespace ic {
     std::vector<Electron*> selelectrons=event->GetPtrVec<Electron>("selElectrons");
     std::vector<Tau*> taus=event->GetPtrVec<Tau>("taus");
 
+    metnomu_significance_ = met->et_sig()/met->pt()*metnomuons->pt();
+    ROOT::Math::PtEtaPhiEVector metnomuvec = metnomuons->vector();
+    alljetsmetnomu_mindphi_=10;
+    for (unsigned i = 0; i < jets.size(); ++i) {
+      if(jets[i]->pt()>30.0){
+	double thisjetmetnomudphi = fabs(ROOT::Math::VectorUtil::DeltaPhi(jets[i]->vector(),metnomuvec));
+	if(thisjetmetnomudphi<alljetsmetnomu_mindphi_)alljetsmetnomu_mindphi_=thisjetmetnomudphi;
+      }
+    }
+    //event must pass first part of selection
+    if (!passEventSel) return 0;
+
     nvetomuons_=vetomuons.size();
     nselmuons_=selmuons.size();
     nvetoelectrons_=vetoelectrons.size();
@@ -393,6 +407,7 @@ namespace ic {
       if (do_qcd_){
 	//loop over all pairs, select ones passing presel
 	//then select pair with highest dphi_jj
+
 	std::vector< std::pair<unsigned,double> > dphivec;
 	for (unsigned iP(0); iP<dijet_vec.size();++iP){//loop on pairs
 	  CompositeCandidate const* dijet = dijet_vec.at(iP);
@@ -400,12 +415,9 @@ namespace ic {
 	  Candidate const* jet2 = dijet->GetCandidate("jet2");
 	  ROOT::Math::PtEtaPhiEVector jet1vec = jet1->vector();
 	  ROOT::Math::PtEtaPhiEVector jet2vec = jet2->vector();
-	  ROOT::Math::PtEtaPhiEVector metnomuvec = metnomuons->vector();
 	  double nomudphi1 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,metnomuvec));
 	  double nomudphi2 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet2vec,metnomuvec));
 
-	  jetmetnomu_mindphi_ = std::min(nomudphi1,nomudphi2);
-	  metnomu_significance_ = met->et_sig()/met->pt()*metnomuons->pt();
 	  dijet_deta_ = fabs(jet1->eta() - jet2->eta());;
 	  dijet_dphi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,jet2vec));
 	  if (passTreeSelection()){
@@ -528,6 +540,7 @@ namespace ic {
       jet2_pdgid_ = 0;
       jet3_pdgid_ = 0;
       jet4_pdgid_ = 0;
+      alljetsmetnomu_mindphi_=jetmetnomu_mindphi_;
       if (jets.size() >= 2) {
 	for (unsigned i = 0; i < jets.size(); ++i) {
 	  if(jets[i]->id()==jet1->id()){
@@ -568,9 +581,13 @@ namespace ic {
 		 isInCentralGap){
 	      ++n_jets_cjv_20EB_30EE_;
 	    }
-	  }
-	}//if more than 2
-      }
+	    if(jets[i]->pt()>30.0){
+	      double thisjetmetnomudphi = fabs(ROOT::Math::VectorUtil::DeltaPhi(jets[i]->vector(),metnomuvec));
+	      if(thisjetmetnomudphi<alljetsmetnomu_mindphi_)alljetsmetnomu_mindphi_=thisjetmetnomudphi;
+	    }
+	  }//if more than 2
+	}//if at least 2
+      }//loop on jets
       static unsigned processed = 0;
       //IF PASSES CUTS FILL TREE
       if (passTreeSelection()){
@@ -579,11 +596,21 @@ namespace ic {
       }
       if (processed == 500) outputTree_->OptimizeBaskets();
     }//if dijet found
-
+    
     return 0;
   }
+
+  bool LightTree::passEventSel(){
+    //    return jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6;
+    return alljetsmetnomu_mindphi_>1 && metnomu_significance_ > 3.0;
+  }
+
+  bool LightTree::passDijetSel(){
+    return dijet_deta_>3.6;
+  }
+
   bool LightTree::passTreeSelection(){
-    return jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6;
+    return passEventSel && passDijetSel;
   }
 
   int  LightTree::PostAnalysis(){
