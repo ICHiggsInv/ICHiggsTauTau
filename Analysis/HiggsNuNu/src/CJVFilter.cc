@@ -38,7 +38,7 @@ namespace ic {
       return 0;
     }
     if(pairvec.size()>1){
-      std::cout<<"Warning: more than one pair"<<std::endl;
+      //std::cout<<"Warning: more than one pair"<<std::endl;
     }
 
     Candidate const* jet1 = pairvec[0]->GetCandidate("jet1");
