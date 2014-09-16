@@ -19,6 +19,7 @@ namespace ic {
     dijet_label_ = "jjCandidates";
     sel_label_ = "JetPair";
     is_data_ = false;
+    do_qcd_ = false;
     dotrigskim_ = false;
     is_embedded_ = false;
     trig_obj_label_ = "triggerObjectsDiPFJet40PFMETnoMu65MJJ800VBFAllJets";
@@ -131,6 +132,7 @@ namespace ic {
       std::cout << "MET Label: " << met_label_ << std::endl;
       std::cout << "dijet Label: " << dijet_label_ << std::endl;
       std::cout << "Selection Label: " << sel_label_ << std::endl;
+      if (do_qcd_) std::cout << "Processing QCD selection: alternative jet pair." << std::endl;
       if (is_embedded_ && is_data_) std::cout << "Processing set for embedded data !" << std::endl;
       else if (is_data_) std::cout << "Processing set for data !" << std::endl;
       else if (is_embedded_) std::cout << "Processing set for embedded MC !" << std::endl;
@@ -384,8 +386,55 @@ namespace ic {
     }
 
     if (dijet_vec.size() != 0) {
+
+      unsigned idx = 0;
       
-      CompositeCandidate const* dijet = dijet_vec.at(0);
+      //select jet pair
+      if (do_qcd_){
+	//loop over all pairs, select ones passing presel
+	//then select pair with highest dphi_jj
+	std::vector< std::pair<unsigned,double> > dphivec;
+	for (unsigned iP(0); iP<dijet_vec.size();++iP){//loop on pairs
+	  CompositeCandidate const* dijet = dijet_vec.at(iP);
+	  Candidate const* jet1 = dijet->GetCandidate("jet1");
+	  Candidate const* jet2 = dijet->GetCandidate("jet2");
+	  ROOT::Math::PtEtaPhiEVector jet1vec = jet1->vector();
+	  ROOT::Math::PtEtaPhiEVector jet2vec = jet2->vector();
+	  ROOT::Math::PtEtaPhiEVector metnomuvec = metnomuons->vector();
+	  double nomudphi1 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,metnomuvec));
+	  double nomudphi2 = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet2vec,metnomuvec));
+
+	  jetmetnomu_mindphi_ = std::min(nomudphi1,nomudphi2);
+	  metnomu_significance_ = met->et_sig()/met->pt()*metnomuons->pt();
+	  dijet_deta_ = fabs(jet1->eta() - jet2->eta());;
+	  dijet_dphi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,jet2vec));
+	  if (passTreeSelection()){
+	    dphivec.push_back(std::pair<unsigned,double>(iP,dijet_dphi_));
+	  }//pass sel
+	}//loop on pairs
+	std::cout << " -- selected " << dphivec.size() << " pairs out of " << dijet_vec.size() << std::endl;
+	if (dphivec.size()>0) {//if pairs found passing presel
+	  //sort
+	  std::cout << " -- before sort -- " << std::endl;
+	  for (unsigned i(0);i<dphivec.size();++i){
+	    std::cout << i << " " << dphivec[i].first << " " << dphivec[i].second << std::endl;
+	  }
+	  std::sort(dphivec.begin(),dphivec.end(),bind(&std::pair<unsigned,double>::second, _1) > bind(&std::pair<unsigned,double>::second, _2));
+	  std::cout << " -- after sort -- " << std::endl;
+	  for (unsigned i(0);i<dphivec.size();++i){
+	    std::cout << i << " " << dphivec[i].first << " " << dphivec[i].second << std::endl;
+	  }
+	  //select
+	  idx=dphivec[0].first;
+	  if (idx==0){
+	    if (dphivec.size()>1) idx=dphivec[1].first;
+	    else return 0;//do not select leading pair for QCD: just exit
+	  }
+	}//if pairs found passing presel
+	else return 0;
+      }//do qcd
+      
+      CompositeCandidate const* dijet = dijet_vec.at(idx);
 
       Candidate const* jet1 = dijet->GetCandidate("jet1");
       Candidate const* jet2 = dijet->GetCandidate("jet2");
@@ -524,14 +573,17 @@ namespace ic {
       }
       static unsigned processed = 0;
       //IF PASSES CUTS FILL TREE
-      if (jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6){
+      if (passTreeSelection()){
 	outputTree_->Fill();
 	++processed;
       }
       if (processed == 500) outputTree_->OptimizeBaskets();
-    }
+    }//if dijet found
 
     return 0;
+  }
+  bool LightTree::passTreeSelection(){
+    return jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6;
   }
 
   int  LightTree::PostAnalysis(){

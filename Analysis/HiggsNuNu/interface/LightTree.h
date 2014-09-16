@@ -20,13 +20,14 @@ namespace ic {
     CLASS_MEMBER(LightTree,std::string, dijet_label);
     CLASS_MEMBER(LightTree,std::string, sel_label);
     CLASS_MEMBER(LightTree,bool, is_data);
+    CLASS_MEMBER(LightTree,bool, do_qcd);
     CLASS_MEMBER(LightTree,bool, dotrigskim);
     CLASS_MEMBER(LightTree,bool, is_embedded);
     CLASS_MEMBER(LightTree,std::string, trig_obj_label);
     CLASS_MEMBER(LightTree,std::string, trigger_path);
 
     TTree *outputTree_;
-    
+
     unsigned run_;
     unsigned lumi_;
     unsigned event_;
@@ -127,6 +128,8 @@ namespace ic {
     virtual int Execute(TreeEvent *event);
     virtual int PostAnalysis();
     virtual void PrintInfo();
+
+    bool passTreeSelection();
 
    };
 

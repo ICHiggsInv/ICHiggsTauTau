@@ -567,6 +567,11 @@ int main(int argc, char* argv[]){
     .set_pairinput_label("jjLeadingCandidates")
     .set_ptcut(30);
   
+  CJVFilter FilterCJVjj = CJVFilter("FilterCJVjj")
+    .set_jetsinput_label("pfJetsPFlow")
+    .set_pairinput_label("jjCandidates")
+    .set_ptcut(30);
+
   CJVFilter FilterCJVj2j3 = CJVFilter("FilterCJVj2j3")
     .set_jetsinput_label("pfJetsPFlow")
     .set_pairinput_label("j2j3Candidates")
@@ -603,7 +608,16 @@ int main(int argc, char* argv[]){
     .set_candidate_name_first("jet1")
     .set_candidate_name_second("jet2")
     .set_select_leading_pair(true)
-    .set_output_label("jjLeadingCandidates");                                                        
+    .set_output_label("jjLeadingCandidates");                                    
+  OneCollCompositeProducer<PFJet> jjPairProducer = OneCollCompositeProducer<PFJet>
+    ("JetJetPairProducer")
+    .set_input_label("pfJetsPFlow")
+    .set_candidate_name_first("jet1")
+    .set_candidate_name_second("jet2")
+    .set_select_leading_pair(false)
+    .set_order_by_pt(true)
+    .set_select_pair(-1)
+    .set_output_label("jjCandidates");                                                        
   OneCollCompositeProducer<PFJet> j2j3PairProducer = OneCollCompositeProducer<PFJet>
     ("Jet2Jet3PairProducer")
     .set_input_label("pfJetsPFlow")
@@ -636,6 +650,11 @@ int main(int argc, char* argv[]){
     .set_max(999);
   SimpleFilter<CompositeCandidate> j1j3PairFilter = SimpleFilter<CompositeCandidate>("J1J3PairFilter")
     .set_input_label("j1j3Candidates")
+    .set_predicate( bind(OrderedPairPtSelection, _1,jet1ptcut, jet2ptcut, cutaboveorbelow) )
+    .set_min(1)
+    .set_max(999);
+  SimpleFilter<CompositeCandidate> allPairFilter = SimpleFilter<CompositeCandidate>("AllPairFilter")
+    .set_input_label("jjCandidates")
     .set_predicate( bind(OrderedPairPtSelection, _1,jet1ptcut, jet2ptcut, cutaboveorbelow) )
     .set_min(1)
     .set_max(999);
@@ -756,6 +775,17 @@ int main(int argc, char* argv[]){
     .set_trigger_path("HLT_DiPFJet40_PFMETnoMu65_MJJ800VBF_AllJets_v")
     .set_trig_obj_label("triggerObjectsDiPFJet40PFMETnoMu65MJJ800VBFAllJets");
 
+  LightTree lightTreeQCD = LightTree("LightTreeQCD")
+    .set_fs(fs)
+    .set_met_label(mettype)
+    .set_dijet_label("jjCandidates")
+    .set_sel_label("JetPairQCD")
+    .set_is_data(is_data)
+    .set_do_qcd(true)
+    .set_dotrigskim(true)
+    .set_trigger_path("HLT_DiPFJet40_PFMETnoMu65_MJJ800VBF_AllJets_v")
+    .set_trig_obj_label("triggerObjectsDiPFJet40PFMETnoMu65MJJ800VBFAllJets");
+
   LightTree lightTreej2j3 = LightTree("LightTreeJ2J3")
     .set_fs(fs)
     .set_met_label(mettype)
@@ -786,20 +816,20 @@ int main(int argc, char* argv[]){
 	output_name.find("EWK-W2j") != output_name.npos) {
       if (wstream != "nunu") {
 	analysis.AddModule(&WtoLeptonFilter);
-	analysis.AddModule("j2j3path",&WtoLeptonFilter);
-	analysis.AddModule("j1j3path",&WtoLeptonFilter);
+	//analysis.AddModule("j2j3path",&WtoLeptonFilter);
+	analysis.AddModule("qcdpath",&WtoLeptonFilter);
       }
     }
     //Do PU Weight
     analysis.AddModule(&pileupWeight);
-    analysis.AddModule("j2j3path",&pileupWeight);
-    analysis.AddModule("j1j3path",&pileupWeight);
+    //analysis.AddModule("j2j3path",&pileupWeight);
+    analysis.AddModule("qcdpath",&pileupWeight);
     analysis.AddModule(&pileupWeight_up);
     analysis.AddModule(&pileupWeight_down);
     //just apply W and Z weights
     analysis.AddModule(&xsWeights);
-    analysis.AddModule("j2j3path",&xsWeights);
-    analysis.AddModule("j1j3path",&xsWeights);
+    //analysis.AddModule("j2j3path",&xsWeights);
+    analysis.AddModule("qcdpath",&xsWeights);
     //Z pt <100 GeV cut for inclusive DY samples
     if(doincludehighptz && output_name.find("JetsToLL") != output_name.npos && output_name.find("PtZ-100-madgraph") == output_name.npos && output_name.find("DYJJ01") == output_name.npos){
       analysis.AddModule(&ZlowmassFilter);
@@ -812,20 +842,20 @@ int main(int argc, char* argv[]){
     //FIXME: do MetFilters also on MC, but not saved right now in MC...
     analysis.AddModule(&metFilters);
     analysis.AddModule(&metLaserFilters);
-    analysis.AddModule("j2j3path",&metFilters);
-    analysis.AddModule("j2j3path",&metLaserFilters);
-    analysis.AddModule("j1j3path",&metFilters);
-    analysis.AddModule("j1j3path",&metLaserFilters);
+    //analysis.AddModule("j2j3path",&metFilters);
+    //analysis.AddModule("j2j3path",&metLaserFilters);
+    analysis.AddModule("qcdpath",&metFilters);
+    analysis.AddModule("qcdpath",&metLaserFilters);
   }
   
   //jet modules
   analysis.AddModule(&jetIDFilter);
-  analysis.AddModule("j2j3path",&jetIDFilter);
-  analysis.AddModule("j1j3path",&jetIDFilter);
+  //analysis.AddModule("j2j3path",&jetIDFilter);
+  analysis.AddModule("qcdpath",&jetIDFilter);
   //don't want pile-up jets to calculate HT,MHT...
   analysis.AddModule(&alljetsCopyCollection);
-  analysis.AddModule("j2j3path",&alljetsCopyCollection);
-  analysis.AddModule("j1j3path",&alljetsCopyCollection);
+  //analysis.AddModule("j2j3path",&alljetsCopyCollection);
+  analysis.AddModule("qcdpath",&alljetsCopyCollection);
   
   
   //prepare collections of veto leptons
@@ -834,16 +864,16 @@ int main(int argc, char* argv[]){
   analysis.AddModule(&vetoElectronIso);
   analysis.AddModule(&vetoMuonCopyCollection);
   analysis.AddModule(&vetoMuonFilter);
-  analysis.AddModule("j2j3path",&vetoElectronCopyCollection);
-  analysis.AddModule("j2j3path",&vetoElectronFilter);
-  analysis.AddModule("j2j3path",&vetoElectronIso);
-  analysis.AddModule("j2j3path",&vetoMuonCopyCollection);
-  analysis.AddModule("j2j3path",&vetoMuonFilter);
-  analysis.AddModule("j1j3path",&vetoElectronCopyCollection);
-  analysis.AddModule("j1j3path",&vetoElectronFilter);
-  analysis.AddModule("j1j3path",&vetoElectronIso);
-  analysis.AddModule("j1j3path",&vetoMuonCopyCollection);
-  analysis.AddModule("j1j3path",&vetoMuonFilter);
+  //analysis.AddModule("j2j3path",&vetoElectronCopyCollection);
+  //analysis.AddModule("j2j3path",&vetoElectronFilter);
+  //analysis.AddModule("j2j3path",&vetoElectronIso);
+  //analysis.AddModule("j2j3path",&vetoMuonCopyCollection);
+  //analysis.AddModule("j2j3path",&vetoMuonFilter);
+  analysis.AddModule("qcdpath",&vetoElectronCopyCollection);
+  analysis.AddModule("qcdpath",&vetoElectronFilter);
+  analysis.AddModule("qcdpath",&vetoElectronIso);
+  analysis.AddModule("qcdpath",&vetoMuonCopyCollection);
+  analysis.AddModule("qcdpath",&vetoMuonFilter);
   
   //filter leptons before making jet pairs and changing MET...
   analysis.AddModule(&selElectronCopyCollection);
@@ -852,71 +882,76 @@ int main(int argc, char* argv[]){
   analysis.AddModule(&selMuonCopyCollection);
   analysis.AddModule(&selMuonFilter);
   analysis.AddModule(&elecMuonOverlapFilter);
-  analysis.AddModule("j2j3path",&selElectronCopyCollection);
-  analysis.AddModule("j2j3path",&selElectronFilter);
-  analysis.AddModule("j2j3path",&selElectronIso);
-  analysis.AddModule("j2j3path",&selMuonCopyCollection);
-  analysis.AddModule("j2j3path",&selMuonFilter);
-  analysis.AddModule("j2j3path",&elecMuonOverlapFilter);
+  //analysis.AddModule("j2j3path",&selElectronCopyCollection);
+  //analysis.AddModule("j2j3path",&selElectronFilter);
+  //analysis.AddModule("j2j3path",&selElectronIso);
+  //analysis.AddModule("j2j3path",&selMuonCopyCollection);
+  //analysis.AddModule("j2j3path",&selMuonFilter);
+  //analysis.AddModule("j2j3path",&elecMuonOverlapFilter);
 
-  analysis.AddModule("j1j3path",&selElectronCopyCollection);
-  analysis.AddModule("j1j3path",&selElectronFilter);
-  analysis.AddModule("j1j3path",&selElectronIso);
-  analysis.AddModule("j1j3path",&selMuonCopyCollection);
-  analysis.AddModule("j1j3path",&selMuonFilter);
-  analysis.AddModule("j1j3path",&elecMuonOverlapFilter);
+  analysis.AddModule("qcdpath",&selElectronCopyCollection);
+  analysis.AddModule("qcdpath",&selElectronFilter);
+  analysis.AddModule("qcdpath",&selElectronIso);
+  analysis.AddModule("qcdpath",&selMuonCopyCollection);
+  analysis.AddModule("qcdpath",&selMuonFilter);
+  analysis.AddModule("qcdpath",&elecMuonOverlapFilter);
   
   //filter taus for plots
   analysis.AddModule(&tauPtEtaFilter);
-  analysis.AddModule("j2j3path",&tauPtEtaFilter);
-  analysis.AddModule("j1j3path",&tauPtEtaFilter);
+  //analysis.AddModule("j2j3path",&tauPtEtaFilter);
+  analysis.AddModule("qcdpath",&tauPtEtaFilter);
   
   //if (printEventList) analysis.AddModule(&hinvPrintList);
   
   //deal with removing overlap with selected leptons
   analysis.AddModule(&jetMuonOverlapFilter);
   analysis.AddModule(&jetElecOverlapFilter);
-  analysis.AddModule("j2j3path",&jetMuonOverlapFilter);
-  analysis.AddModule("j2j3path",&jetElecOverlapFilter);
-  analysis.AddModule("j1j3path",&jetMuonOverlapFilter);
-  analysis.AddModule("j1j3path",&jetElecOverlapFilter);
+  //analysis.AddModule("j2j3path",&jetMuonOverlapFilter);
+  //analysis.AddModule("j2j3path",&jetElecOverlapFilter);
+  analysis.AddModule("qcdpath",&jetMuonOverlapFilter);
+  analysis.AddModule("qcdpath",&jetElecOverlapFilter);
   //no need to clean taus, we don't do it in the signal selection.
   
   //Module to do jet smearing and systematics
   analysis.AddModule(&ModifyJetMET);
-  analysis.AddModule("j2j3path",&ModifyJetMET);
-  analysis.AddModule("j1j3path",&ModifyJetMET);
+  //analysis.AddModule("j2j3path",&ModifyJetMET);
+  analysis.AddModule("qcdpath",&ModifyJetMET);
   
   //add met without leptons for plots
   analysis.AddModule(&metNoMuons);
   analysis.AddModule(&metNoElectrons);
   analysis.AddModule(&metNoENoMu);
-  analysis.AddModule("j2j3path",&metNoMuons);
-  analysis.AddModule("j2j3path",&metNoElectrons);
-  analysis.AddModule("j2j3path",&metNoENoMu);
-  analysis.AddModule("j1j3path",&metNoMuons);
-  analysis.AddModule("j1j3path",&metNoElectrons);
-  analysis.AddModule("j1j3path",&metNoENoMu);
+  //analysis.AddModule("j2j3path",&metNoMuons);
+  //analysis.AddModule("j2j3path",&metNoElectrons);
+  //analysis.AddModule("j2j3path",&metNoENoMu);
+  analysis.AddModule("qcdpath",&metNoMuons);
+  analysis.AddModule("qcdpath",&metNoElectrons);
+  analysis.AddModule("qcdpath",&metNoENoMu);
   
   //filter taus
   analysis.AddModule(&tauDzFilter);
   analysis.AddModule(&tauIsoFilter);
   analysis.AddModule(&tauElRejectFilter);
   analysis.AddModule(&tauMuRejectFilter);
+
+  analysis.AddModule("qcdpath",&tauDzFilter);
+  analysis.AddModule("qcdpath",&tauIsoFilter);
+  analysis.AddModule("qcdpath",&tauElRejectFilter);
+  analysis.AddModule("qcdpath",&tauMuRejectFilter);
   
   //filter jets
   analysis.AddModule(&jetPtEtaFilter);
-  analysis.AddModule("j2j3path",&jetPtEtaFilter);
-  analysis.AddModule("j1j3path",&jetPtEtaFilter);
+  //analysis.AddModule("j2j3path",&jetPtEtaFilter);
+  analysis.AddModule("qcdpath",&jetPtEtaFilter);
   
   
   //if (printEventContent) analysis.AddModule(&hinvPrint);
   //two-leading jet pair production before plotting
   analysis.AddModule(&jjLeadingPairProducer);
-  analysis.AddModule("j2j3path",&jjLeadingPairProducer);
-  analysis.AddModule("j1j3path",&jjLeadingPairProducer);
-  analysis.AddModule("j2j3path",&j2j3PairProducer);
-  analysis.AddModule("j1j3path",&j1j3PairProducer);
+  //analysis.AddModule("j2j3path",&jjLeadingPairProducer);
+  analysis.AddModule("qcdpath",&jjLeadingPairProducer);
+  //analysis.AddModule("j2j3path",&j2j3PairProducer);
+  analysis.AddModule("qcdpath",&jjPairProducer);
   //if (printEventContent) analysis.AddModule(&hinvPrint);
   
   //analysis.AddModule(&hinvPrint);
@@ -924,26 +959,26 @@ int main(int argc, char* argv[]){
   //Need two jets and metnomuons to apply trigger weights.
   //need sel leptons to apply idiso weights
   if (!is_data) analysis.AddModule(&hinvWeights);
-  if (!is_data) analysis.AddModule("j2j3path",&hinvWeights);
-  if (!is_data) analysis.AddModule("j1j3path",&hinvWeights);
+  //if (!is_data) analysis.AddModule("j2j3path",&hinvWeights);
+  if (!is_data) analysis.AddModule("qcdpath",&hinvWeights);
   
     //if (printEventList) analysis.AddModule(&hinvPrintList);
 
   //record the number of jets in the gap
   analysis.AddModule(&jetPairFilter);
   analysis.AddModule(&FilterCJV);
-  analysis.AddModule("j2j3path",&j2j3PairFilter);
-  analysis.AddModule("j2j3path",&FilterCJVj2j3);
-  analysis.AddModule("j1j3path",&j1j3PairFilter);
-  analysis.AddModule("j1j3path",&FilterCJVj1j3);
+  //analysis.AddModule("j2j3path",&j2j3PairFilter);
+  //analysis.AddModule("j2j3path",&FilterCJVj2j3);
+  analysis.AddModule("qcdpath",&allPairFilter);
+  analysis.AddModule("qcdpath",&FilterCJVjj);
   
   //jet pair selection
   //if (printEventList) analysis.AddModule(&hinvPrintList);
   
   //write tree with TMVA input variables
   analysis.AddModule(&lightTree);
-  analysis.AddModule("j2j3path",&lightTreej2j3);  
-  analysis.AddModule("j1j3path",&lightTreej1j3);  
+  //analysis.AddModule("j2j3path",&lightTreej2j3);  
+  analysis.AddModule("qcdpath",&lightTreeQCD);  
   
 
   // Run analysis

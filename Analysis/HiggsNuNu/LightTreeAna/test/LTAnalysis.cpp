@@ -130,6 +130,7 @@ int main(int argc, char* argv[]){
   shape.push_back("jet1_csv(50,0,1.)");histTitle.push_back(";CSV (jet 1);entries");
   shape.push_back("jet2_csv(50,0,1.)");histTitle.push_back(";CSV (jet 2);entries");
   shape.push_back("jet3_csv(50,0,1.)");histTitle.push_back(";CSV (jet 3);entries");
+  shape.push_back("m_mumu(60,60,120)");histTitle.push_back(";M_{#mu#mu} (GeV);entries");
 
   assert(shape.size() == histTitle.size());
 
@@ -264,13 +265,12 @@ int main(int argc, char* argv[]){
     .set_sigmcqcdset("ZJets_ll")
     .set_contmcewkset("ZJets_ll_vbf")
     .set_contmcqcdset("ZJets_ll")
-   .set_contbkgset(Zcontbkgsets)
+    .set_contbkgset(Zcontbkgsets)
     .set_contdataset(dataset)
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
     .set_contcat("nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120")
-
     .set_sigmainccontewk(303)
     .set_sigmainccontqcd(3503700./3)
     .set_sigmaincsigewk(460*3)
@@ -360,14 +360,20 @@ int main(int argc, char* argv[]){
   QCDcontbkgextrafactordir.push_back("zvv");
   QCDcontbkgextrafactordir.push_back("wel");
   QCDcontbkgextrafactordir.push_back("wmu");
-  QCDcontbkgextrafactordir.push_back("");
+  QCDcontbkgextrafactordir.push_back("wtau");
   
   std::vector<int> QCDcontbkgisz;
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
-  QCDcontbkgisz.push_back(2);
-  QCDcontbkgisz.push_back(1);
+  if(channel!="mumu"){
+    QCDcontbkgisz.push_back(2);
+    QCDcontbkgisz.push_back(1);
+  }
+  else{
+    QCDcontbkgisz.push_back(0);
+    QCDcontbkgisz.push_back(0);
+  }
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);

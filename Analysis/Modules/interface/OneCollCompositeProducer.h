@@ -15,6 +15,7 @@ class OneCollCompositeProducer : public ModuleBase {
   std::string input_label_;
   std::string candidate_name_first_;
   std::string candidate_name_second_;
+  bool order_by_pt_;
   bool select_leading_pair_;
   int select_pair_;
   std::string output_label_;
@@ -44,6 +45,11 @@ class OneCollCompositeProducer : public ModuleBase {
   }
 
 
+  OneCollCompositeProducer<T> & set_order_by_pt(bool const& order_by_pt) {
+    order_by_pt_ = order_by_pt;
+    return *this;
+  }
+
   OneCollCompositeProducer<T> & set_select_leading_pair(bool const& select_leading_pair) {
     select_leading_pair_ = select_leading_pair;
     return *this;
@@ -64,6 +70,7 @@ class OneCollCompositeProducer : public ModuleBase {
 template <class T>
 OneCollCompositeProducer<T>::OneCollCompositeProducer(std::string const& name) : ModuleBase(name) {
   select_leading_pair_=false;
+  order_by_pt_ = false;
   select_pair_=-1;
 }
 
@@ -80,7 +87,7 @@ int OneCollCompositeProducer<T>::PreAnalysis() {
 template <class T>
 int OneCollCompositeProducer<T>::Execute(TreeEvent *event) {
   std::vector<T *> & vec_first = event->GetPtrVec<T>(input_label_);
-  if (select_leading_pair_ || select_pair_>-1) std::sort(vec_first.begin(), vec_first.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
+  if (select_leading_pair_ || order_by_pt_) std::sort(vec_first.begin(), vec_first.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
   std::vector< std::pair<T*,T*> > pairs = MakePairs(vec_first);
   std::vector<CompositeCandidate> vec_out;
   std::vector<CompositeCandidate *> ptr_vec_out;
