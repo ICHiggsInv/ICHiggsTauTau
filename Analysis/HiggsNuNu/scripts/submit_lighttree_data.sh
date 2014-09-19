@@ -110,7 +110,12 @@ for SYST in central #JESUP JESDOWN JERBETTER JERWORSE UESUP UESDOWN #NOTE SYSTEM
     for dataset in PARKEDsplit MET
     do
 
-	PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/$dataset
+	if [ "$dataset" = "PARKEDsplit" ]
+	then
+	    PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/PARKED
+	else 
+	    PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/$dataset
+	fi
     
 	for FILELIST in `ls filelists/$PRODUCTION/$QUEUEDIR/${PRODUCTION}_${dataset}_*`
 	do
