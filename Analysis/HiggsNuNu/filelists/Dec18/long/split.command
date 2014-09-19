@@ -1,0 +1,1 @@
+for run in B C D; do split -l 1500 -a 1 -d Dec18_PARKED_VBF-Parked-2012D-22Jan2013-v1.dat Dec18_PARKEDsplit_VBF-Parked-2012D-22Jan2013-v1-; done; for i in `ls *PARKEDsplit*`; do mv Dec18_PARKEDsplit_VBF-Parked-2012D-22Jan2013-v1-8 Dec18_PARKEDsplit_VBF-Parked-2012D-22Jan2013-v1-8.dat; done
