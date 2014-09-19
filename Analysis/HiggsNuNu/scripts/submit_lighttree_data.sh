@@ -107,7 +107,7 @@ for SYST in central #JESUP JESDOWN JERBETTER JERWORSE UESUP UESDOWN #NOTE SYSTEM
     export JOBSUBMIT=$JOBSCRIPT" "$JOBQUEUE
     echo "Using job-submission: " $JOBSUBMIT
     
-    for dataset in MET PARKED
+    for dataset in PARKEDsplit MET
     do
 
 	PREFIX=root://xrootd.grid.hep.ph.ic.ac.uk//store/user/pdunne/$PRODUCTION/$dataset
