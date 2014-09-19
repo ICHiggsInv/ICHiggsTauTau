@@ -1,5 +1,5 @@
 #!/bin/sh
-DOCERN=1
+DOCERN=0
 
 ## Try and take the JOBWRAPPER and JOBSUBMIT commands
 ## from the environment if set, otherwise use these defaults
