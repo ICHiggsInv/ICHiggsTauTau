@@ -94,7 +94,8 @@ namespace ic {
     double jet1metnomu_scalarprod_;
     double jet2metnomu_scalarprod_;
     double cjvjetpt_;
-    unsigned n_jets_;
+    unsigned n_jets_15_;
+    unsigned n_jets_30_;
     unsigned n_jets_cjv_30_;
     unsigned n_jets_cjv_20EB_30EE_;
     double passtrigger_;

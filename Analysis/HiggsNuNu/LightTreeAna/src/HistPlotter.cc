@@ -327,9 +327,18 @@ namespace ic{
       tmpstr.erase(std::string(file->GetName()).find(".root"),5);
       lsave << tmpstr ;
       lsave << ".pdf" ;
-      if (iShape==0) lsave << "[";
-      if (iShape==shapes_.size()-1) lsave << "]";
+      if (iShape==0) {
+	lsave << "[";
+	c1->Print(lsave.str().c_str());//open the file
+	lsave.str("");//reset for adding the first plot
+	lsave << tmpstr ;
+	lsave << ".pdf" ;
+      }
       c1->Print(lsave.str().c_str());
+      if (iShape==shapes_.size()-1) {
+	lsave << "]";
+	c1->Print(lsave.str().c_str());//close the file
+      }
 
       lsave.str("");
       lsave << tmpstr << "_" << c1->GetName() << ".pdf" ;

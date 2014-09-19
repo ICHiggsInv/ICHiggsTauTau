@@ -92,7 +92,8 @@ namespace ic {
     dijetmetnomu_ptfraction_ = 0;
     jet1metnomu_scalarprod_ = 0;
     jet2metnomu_scalarprod_ = 0;
-    n_jets_ = 0;
+    n_jets_15_ = 0;
+    n_jets_30_ = 0;
     n_jets_cjv_30_ = 0;
     n_jets_cjv_20EB_30EE_ = 0;
     cjvjetpt_=-1;
@@ -207,7 +208,8 @@ namespace ic {
     outputTree_->Branch("dijetmetnomu_ptfraction",&dijetmetnomu_ptfraction_);
     outputTree_->Branch("jet1metnomu_scalarprod",&jet1metnomu_scalarprod_);
     outputTree_->Branch("jet2metnomu_scalarprod",&jet2metnomu_scalarprod_);
-    outputTree_->Branch("n_jets",&n_jets_);
+    outputTree_->Branch("n_jets_15",&n_jets_15_);
+    outputTree_->Branch("n_jets_30",&n_jets_30_);
     outputTree_->Branch("n_jets_cjv_30",&n_jets_cjv_30_);
     outputTree_->Branch("n_jets_cjv_20EB_30EE",&n_jets_cjv_20EB_30EE_);
     outputTree_->Branch("cjvjetpt",&cjvjetpt_);
@@ -301,11 +303,15 @@ namespace ic {
     metnomu_significance_ = met->et_sig()/met->pt()*metnomuons->pt();
     ROOT::Math::PtEtaPhiEVector metnomuvec = metnomuons->vector();
     alljetsmetnomu_mindphi_=10;
+    n_jets_15_ = 0;
+    n_jets_30_ = 0;
     for (unsigned i = 0; i < jets.size(); ++i) {
       if(jets[i]->pt()>30.0){
 	double thisjetmetnomudphi = fabs(ROOT::Math::VectorUtil::DeltaPhi(jets[i]->vector(),metnomuvec));
 	if(thisjetmetnomudphi<alljetsmetnomu_mindphi_)alljetsmetnomu_mindphi_=thisjetmetnomudphi;
+	n_jets_30_++;
       }
+      if (jets[i]->pt()>15.0) n_jets_15_++;
     }
     //event must pass first part of selection
     if (!passEventSel()) return 0;
@@ -315,7 +321,6 @@ namespace ic {
     nvetoelectrons_=vetoelectrons.size();
     nselelectrons_=selelectrons.size();
     ntaus_=taus.size();
-    n_jets_ = jets.size();
 
     std::sort(selmuons.begin(), selmuons.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
     std::sort(selelectrons.begin(), selelectrons.end(), bind(&Candidate::pt, _1) > bind(&Candidate::pt, _2));
@@ -405,7 +410,7 @@ namespace ic {
       
       //select jet pair
       if (do_qcd_){
-	//need minimum 2 to start with for the QCD !
+	//need minimum 2 pairs to start with for the QCD !
 	if (dijet_vec.size()>1){
 	  //loop over all pairs, select ones passing presel
 	  //then select pair with highest dphi_jj
@@ -596,11 +601,12 @@ namespace ic {
 
   bool LightTree::passEventSel(){
     //    return jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6;
-    return alljetsmetnomu_mindphi_>1 && metnomu_significance_ > 3.0;
+    //return alljetsmetnomu_mindphi_>1 && metnomu_significance_ > 3.0;
+    return metnomuons_ > 60 && metnomu_significance_ > 3.0;
   }
 
   bool LightTree::passDijetSel(){
-    return dijet_deta_>3.6;
+    return dijet_deta_>3.6 && dijet_M_ > 600;
   }
 
   bool LightTree::passTreeSelection(){

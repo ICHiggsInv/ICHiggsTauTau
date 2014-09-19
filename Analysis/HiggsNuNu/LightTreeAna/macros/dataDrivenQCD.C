@@ -127,12 +127,12 @@ int dataDrivenQCD() {
   unsigned varIdx = 3;
 
   const unsigned nTrees = 3;
-  std::string label[nTrees] = {"j1j2","j1j3","j2j3"};
+  std::string label[nTrees] = {"j1j2","j1j3","qcd"};
 
   TFile *mcFile[nTrees];
   mcFile[0] = TFile::Open("../output/nunu.root");
   mcFile[1] = TFile::Open("../output/nunu_J1J3.root");
-  mcFile[2] = TFile::Open("../output/nunu_J2J3.root");
+  mcFile[2] = TFile::Open("../output/nunu_QCD.root");
 
   TFile *data = TFile::Open(fileName.c_str(), "update");
   if (!data) {
@@ -146,7 +146,7 @@ int dataDrivenQCD() {
   TTree *tree[nTrees];
   tree[0] = (TTree*)gDirectory->Get("LightTree");
   tree[1] = (TTree*)gDirectory->Get("LightTreeJ1J3");
-  tree[2] = (TTree*)gDirectory->Get("LightTreeJ2J3");
+  tree[2] = (TTree*)gDirectory->Get("LightTreeQCD");
 
   unsigned run;
   unsigned lumi;
@@ -227,19 +227,21 @@ int dataDrivenQCD() {
 	if (!isInserted.second){
 	  is_dupl = 1;
 	  if (iT==0)
-	    duplicateJ1J2++;
+	    duplicateJ1J2 += 3.72;
 	  else if (iT==1)
-	    duplicateJ1J3++;
+	    duplicateJ1J3 += 3.72;
 	  else 
-	    duplicateJ2J3++;
+	    duplicateJ2J3 += 3.72;
 	}
 	else {
 	  if (iT==0)
-	    passJ1J2++;
-	  else if (iT==1)
-	    passJ1J3++;
+	    passJ1J2 += 3.72;
+	  else if (iT==1){
+	    passJ1J3 += 3.72;
+	    evtSet.erase(lEvt);
+	  }
 	  else 
-	    passJ2J3++;
+	    passJ2J3 += 3.72;
 	}
       }//pass sel
       //if (iE<10){
@@ -260,9 +262,9 @@ int dataDrivenQCD() {
   // //return 1;
 
   std::cout << " Duplicated/passing events: " << std::endl
-	    << " j1j2 & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
-	    << " j1j3 & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
-	    << " j2j3 & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
+	    << label[0]<< " & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
+	    << label[1]<< " & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
+	    << label[2]<< " & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
     ;
 
   const unsigned nVars = 17;
@@ -396,7 +398,7 @@ int dataDrivenQCD() {
       selection << "jet1_eta*jet2_eta<0 && dijet_M>=600 && (jet1_pt>50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
       selection << " )";
       //if (iT>0) selection << " * (qcdW)";
-
+      selection << " * (3.72)";
       lname.str("");
       lname << "p_" << vars[iV] << "_" << label[iT];
       //hist[iV][iT] = new TH1F(lname.str().c_str(),xaxis[iV].c_str(),nbins[iV],min[iV],max[iV]);
@@ -430,18 +432,18 @@ int dataDrivenQCD() {
     }//loop on trees
     
 
-    histsum[iV] = (TH1F*)hist[iV][1]->Clone("histsum");
+    histsum[iV] = (TH1F*)hist[iV][2]->Clone("histsum");
     //histsum[iV]->Sumw2();
-    histsum[iV]->Add(hist[iV][2]);
+    //histsum[iV]->Add(hist[iV][2]);
 
     TH1F *histTmp = (TH1F*)histDataSubtr[iV][0]->Clone("histTmp");
     //histTmp->Sumw2();
     histTmp->Divide(histsum[iV]);
     grWeight[iV] = new TGraphErrors(histTmp);
 
-    histsumSubtr[iV] = (TH1F*)histDataSubtr[iV][1]->Clone("histsumSubtr");
+    histsumSubtr[iV] = (TH1F*)histDataSubtr[iV][2]->Clone("histsumSubtr");
     //histsumSubtr[iV]->Sumw2();
-    histsumSubtr[iV]->Add(histDataSubtr[iV][2]);
+    //histsumSubtr[iV]->Add(histDataSubtr[iV][2]);
     histsumSubtr[iV]->SetLineColor(4);
     histsumSubtr[iV]->SetFillColor(4);
     histsumSubtr[iV]->SetFillStyle(3004);
@@ -472,7 +474,7 @@ int dataDrivenQCD() {
     histMC[iV][0]->Draw("histsame");
     //histQCD[iV]->Draw("histsame");
     //histDataCheck[iV]->Draw("PEsame");
-    leg->AddEntry(histsumSubtr[iV],"j1j3+j2j3","F");
+    leg->AddEntry(histsumSubtr[iV],"Data-QCD","F");
     leg->AddEntry(histMC[iV][0],"V+Top+VV","F");
     //leg->AddEntry(histDataCheck[iV],"PARKED","F");
     leg->Draw("same");

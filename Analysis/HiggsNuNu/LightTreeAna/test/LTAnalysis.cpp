@@ -105,19 +105,19 @@ int main(int argc, char* argv[]){
     .set_friendtreename("mvafriend")
     .set_sets(setswithfriends);
 
-  std::vector<std::string> histTitle;
   std::vector<std::string> shape;
   std::vector<std::string> histTitle;
   //shape.push_back("BDT(12,-1.,0.2)");
 
-  shape.push_back("jet1_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j1} (GeV);entries");
-  shape.push_back("jet2_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j2} (GeV);entries");
-  shape.push_back("jet3_pt(27,30.,300.)");  histTitle.push_back(";p_{T}^{j3} (GeV);entries");
+  shape.push_back("jet1_pt(28,20.,300.)");  histTitle.push_back(";p_{T}^{j1} (GeV);entries");
+  shape.push_back("jet2_pt(28,20.,300.)");  histTitle.push_back(";p_{T}^{j2} (GeV);entries");
+  shape.push_back("jet3_pt(29,5.,295.)");  histTitle.push_back(";p_{T}^{j3} (GeV);entries");
   shape.push_back("metnomuons(25,50.,300.)"); histTitle.push_back(";METnoMu (GeV);entries");
   //shape.push_back("l1met(20,00.,200.)");histTitle.push_back(";L1MET (GeV);entries");
   shape.push_back("dijet_M(14,600.,2000.)");histTitle.push_back(";M_{jj} (GeV);entries");
-  shape.push_back("jetmetnomu_mindphi(32,1.5,3.2)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
-  shape.push_back("metnomu_significance(40,3.,8.)");histTitle.push_back(";METnoMu/#sigma(METnoMu);entries");
+  shape.push_back("jetmetnomu_mindphi(60,0,3.1416)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
+  shape.push_back("alljetsmetnomu_mindphi(41,0.94646,3.1416)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
+  shape.push_back("metnomu_significance(51,2.9,8.)");histTitle.push_back(";METnoMu/#sigma(METnoMu);entries");
   //shape.push_back("dijet_sumeta(50,-10,10)");histTitle.push_back(";#eta_{j1}+#eta_{j2};entries");
   shape.push_back("ht(50,0,1000)");histTitle.push_back(";H_{T} (GeV);entries");
   //shape.push_back("jetunclet_mindphi(32,0,3.2)");histTitle.push_back(";min #Delta#phi(j,E_{T}^{uncl});entries");
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]){
   shape.push_back("dijetmetnomu_scalarSum_pt(70,0,1400)");histTitle.push_back(";p_{T}^{jeta}+p_{T}^{jetb}+METnoMu;entries");
   shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");histTitle.push_back(";p_{T}(#vec{ja}+#vec{jb}+#vec{METnoMu});entries");
   shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");histTitle.push_back(";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu);entries");
-  shape.push_back("n_jets(10,0,10)");histTitle.push_back(";njets (30 GeV);entries");
+  shape.push_back("n_jets(10,0,10)");histTitle.push_back(";njets (p_{T}>15 GeV);entries");
   shape.push_back("n_jets_cjv_30(10,0,10)");histTitle.push_back(";CJV jets (30 GeV);entries");
   //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");histTitle.push_back(";CJV jets (20 GeV EB, 30 GeV EE);entries");
   shape.push_back("dijet_dphi(30,0.,3.)");histTitle.push_back(";#Delta#phi_{jj};entries");
@@ -134,6 +134,7 @@ int main(int argc, char* argv[]){
   shape.push_back("jet2_csv(50,0,1.)");histTitle.push_back(";CSV (jet 2);entries");
   shape.push_back("jet3_csv(50,0,1.)");histTitle.push_back(";CSV (jet 3);entries");
   shape.push_back("m_mumu(60,60,120)");histTitle.push_back(";M_{#mu#mu} (GeV);entries");
+  shape.push_back("lep_mt(20,0.,100.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
 
   assert(shape.size() == histTitle.size());
 
@@ -340,6 +341,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contdataextrasel(dataextrasel)
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
     .set_contcat(mumucat)//"nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120")
+    .set_contdataweight("weight_nolep*3.72")
     .set_sigmainccontewk(303)
     .set_sigmainccontqcd(3503700./3)
     .set_sigmaincsigewk(460*3)
@@ -360,7 +362,9 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contdataextrasel(dataextrasel)
     .set_sigmcweight("total_weight_leptight")
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
-    .set_contcat(mumucat);//"nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120");
+    .set_contcat(mumucat)
+    .set_contdataweight("weight_nolep*3.72");
+;//"nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120");
 
   //WBKG SHAPE GENERATION
   std::vector<std::string> Wcontbkgsets; //List of sets for ncbkg
@@ -381,7 +385,8 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
-    .set_contcat(munucat);//"nvetoelectrons==0 && nvetomuons==1 && nselmuons==1");
+    .set_contcat(munucat)
+    .set_contdataweight("weight_nolep*3.72");
   if((channel=="enu")||(channel=="munu")){
     wmunu.set_sigmcweight("total_weight_leptight");
   }
@@ -397,7 +402,8 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
-    .set_contcat(enucat);//"nselelectrons==1 && nvetoelectrons ==1 && nvetomuons==0");
+    .set_contcat(enucat)
+    .set_contdataweight("weight_nolep*3.72");
   if((channel=="enu")||(channel=="munu")){
     wenu.set_sigmcweight("total_weight_leptight");
   }
@@ -406,7 +412,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   wtaunu.set_sigmcset("WJets_taunu")
     .set_shape(shape)
     .set_dirname("wtau")
-    .set_contmcset("WJets_munu")
+    .set_contmcset("WJets_taunu")
     .set_contdataset(dataset)
     .set_contbkgset(Wcontbkgsets)
     .set_basesel(analysis->baseselection())
@@ -415,7 +421,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contcat(taunucat)//"ntaus>=1&&nvetoelectrons ==0 && nvetomuons==0&&lep_mt>20")
     .set_sigmcweight("total_weight_lepveto")
     .set_contmcweight("total_weight_lepveto")
-    .set_contdataweight("weight_nolep");
+    .set_contdataweight("weight_nolep*3.72");
   if((channel=="enu")||(channel=="munu")){
     wtaunu.set_sigmcweight("total_weight_leptight");
   }
@@ -469,7 +475,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contbkgisz(QCDcontbkgisz)
     .set_sigmcweight("total_weight_lepveto")
     .set_contmcweight("total_weight_lepveto")
-    .set_contdataweight("weight_nolep")
+    .set_contdataweight("weight_nolep*3.72")
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
@@ -570,7 +576,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   std::vector<LTPlotElement> elementvec;
   LTPlotElement dataele;
   dataele.set_is_data(true)
-    .set_scale(1)
+    .set_scale(19.7854/(0.889+11.581-7.152))//=3.72
     .set_legname("Data")
     .set_is_inrationum(true)
     .set_sample("data_obs");
@@ -688,7 +694,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   dirvec.push_back("wmu");
   dirvec.push_back("wtau");
   dirvec.push_back("zvv");
-  //dirvec.push_back("qcd");
+  dirvec.push_back("qcd");
   dirvec.push_back("vv");
   dirvec.push_back("wg");  
   dirvec.push_back("top");

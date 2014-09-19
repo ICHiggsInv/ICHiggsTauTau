@@ -62,17 +62,17 @@ double deltaPhi(double jeta_phi, double jetb_phi){
 int plotVar() {
 
   //std::string fileName = "../../output_lighttree/Wjets_enu.root";
-  std::string fileName = "../../output_lighttree/VBFPARKED.root";
-  //std::string fileName = "../../output_lighttree/VBFQCD.root";
+  //std::string fileName = "../../output_lighttree/VBFPARKED.root";
+  std::string fileName = "../../output_lighttree/VBFQCD.root";
   //std::string fileName = "../../output_lighttree/MC_Powheg-Htoinv-mH125.root";
 
   //std::string type = "Wjets_enu";
-  std::string type = "VBFPARKED";
-  //std::string type = "VBFQCD";
+  //std::string type = "VBFPARKED";
+  std::string type = "VBFQCD";
   //std::string type = "VBFH125";
 
-  //bool isMC = true;
-  bool isMC = false;
+  bool isMC = true;
+  //bool isMC = false;
 
   TFile *data = TFile::Open(fileName.c_str(), "update");
   if (!data) {
@@ -83,12 +83,12 @@ int plotVar() {
   data->cd();
 
   const unsigned nTrees = 3;
-  std::string label[nTrees] = {"j1j2","j1j3","j2j3"};
+  std::string label[nTrees] = {"j1j2","j1j3","qcd"};
 
   TTree *tree[nTrees];
   tree[0] = (TTree*)gDirectory->Get("LightTree");
   tree[1] = (TTree*)gDirectory->Get("LightTreeJ1J3");
-  tree[2] = (TTree*)gDirectory->Get("LightTreeJ2J3");
+  tree[2] = (TTree*)gDirectory->Get("LightTreeQCD");
 
   unsigned run;
   unsigned lumi;
@@ -165,6 +165,8 @@ int plotVar() {
 
     std::cout << " Jet pair " << label[iT] << " has " << nEntries[iT] << " entries in tree." << std::endl;
     
+    std::cout << " Dupl set size: " << evtSet.size() << std::endl;
+
     for (int iE(0); iE<nEntries[iT]; ++iE){//loop on entries
       tree[iT]->GetEntry(iE);
       is_dupl = 0;
@@ -205,8 +207,10 @@ int plotVar() {
 	else {
 	  if (iT==0)
 	    passJ1J2++;
-	  else if (iT==1)
+	  else if (iT==1){
 	    passJ1J3++;
+	    evtSet.erase(lEvt);
+	  }
 	  else 
 	    passJ2J3++;
 	}
@@ -216,12 +220,15 @@ int plotVar() {
       brdRjbjc->Fill();
       brdphiMETjc->Fill();
     }//loop on entries
+
+    std::cout << " Dupl set size after: " << evtSet.size() << std::endl;
+  
   }//loop on trees
 
   std::cout << " Duplicated/passing events: " << std::endl
-	    << " j1j2 & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
-	    << " j1j3 & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
-	    << " j2j3 & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
+	    << label[0] << " & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
+	    << label[1] << " & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
+	    << label[2] << " & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
     ;
 
   const unsigned nVars = 25;
@@ -286,7 +293,7 @@ int plotVar() {
   float max[nVars] = {3000,500,8,3.1416,10,3.1416,300,300,300,300,1,1,1,1,1000,400,1,10,22,22,22,22,10,10,3.1416};  
 
   TH1F *hist[nVars][nTrees];
-  TH1F *histsum[nVars];
+  //TH1F *histsum[nVars];
 
   std::ostringstream lname;
   TCanvas *myc[nVars+4];
@@ -328,12 +335,12 @@ int plotVar() {
       }
     }//loop on trees
     
-    histsum[iV] = (TH1F*)hist[iV][1]->Clone("histsum");
+    //histsum[iV] = (TH1F*)hist[iV][1]->Clone("histsum");
     //histsum[iV]->Sumw2();
-    histsum[iV]->Add(hist[iV][2]);
-    histsum[iV]->SetLineColor(4);
-    histsum[iV]->SetFillColor(4);
-    histsum[iV]->SetFillStyle(3004);
+    //histsum[iV]->Add(hist[iV][2]);
+    //histsum[iV]->SetLineColor(4);
+    //histsum[iV]->SetFillColor(4);
+    //histsum[iV]->SetFillStyle(3004);
 
     myc[iV]->Clear();
     myc[iV]->cd();
@@ -345,8 +352,8 @@ int plotVar() {
       hist[iV][iT]->Scale(1./hist[iV][iT]->Integral());
       if (hist[iV][iT]->GetMaximum() > lmaxY) lmaxY =hist[iV][iT]->GetMaximum();
     }
-    histsum[iV]->Scale(1./histsum[iV]->Integral());
-    if (histsum[iV]->GetMaximum() > lmaxY) lmaxY =histsum[iV]->GetMaximum();
+    //histsum[iV]->Scale(1./histsum[iV]->Integral());
+    //if (histsum[iV]->GetMaximum() > lmaxY) lmaxY =histsum[iV]->GetMaximum();
 
     TLegend *leg = new TLegend(0.62,0.75,0.86,0.99);
     leg->SetFillColor(10);
@@ -355,8 +362,8 @@ int plotVar() {
       hist[iV][iT]->Draw(iT==0?"PE":"histsame");
       leg->AddEntry(hist[iV][iT],label[iT].c_str(),"L");
     }
-    histsum[iV]->Draw("histsame");
-    leg->AddEntry(histsum[iV],"j1j3+j2j3","F");
+    //histsum[iV]->Draw("histsame");
+    //leg->AddEntry(histsum[iV],"j1j3+j2j3","F");
     leg->Draw("same");
 
     myc[iV]->Update();
@@ -374,9 +381,9 @@ int plotVar() {
   hist[6][0]->Draw("PE");
   hist[6][1]->Draw("histsame");
   hist[8][2]->Draw("histsame");
-  histsum[6]->Add(hist[6][1],hist[8][2]);
-  histsum[6]->Scale(1./histsum[6]->Integral());
-  histsum[6]->Draw("histsame");
+  //histsum[6]->Add(hist[6][1],hist[8][2]);
+  //histsum[6]->Scale(1./histsum[6]->Integral());
+  //histsum[6]->Draw("histsame");
   myc[nVars]->Update();
   lname.str("");
   lname << "PLOTS/" << type << "_pTlead.pdf";
@@ -387,35 +394,35 @@ int plotVar() {
   hist[7][0]->Draw("PE");
   hist[8][1]->Draw("histsame");
   hist[6][2]->Draw("histsame");
-  histsum[7]->Add(hist[8][1],hist[6][2]);
-  histsum[7]->Scale(1./histsum[7]->Integral());
-  histsum[7]->Draw("histsame");
+  //histsum[7]->Add(hist[8][1],hist[6][2]);
+  //histsum[7]->Scale(1./histsum[7]->Integral());
+  //histsum[7]->Draw("histsame");
   myc[nVars+1]->Update();
   lname.str("");
   lname << "PLOTS/" << type << "_pTsublead.pdf";
   myc[nVars+1]->Print(lname.str().c_str());
 
   myc[nVars+2]->cd();
-  histsum[8]->Add(hist[7][1],hist[7][2]);
-  histsum[8]->Scale(1./histsum[8]->Integral());
-  hist[8][0]->SetMaximum(histsum[8]->GetMaximum()*1.1);
+  //histsum[8]->Add(hist[7][1],hist[7][2]);
+  //histsum[8]->Scale(1./histsum[8]->Integral());
+  //hist[8][0]->SetMaximum(histsum[8]->GetMaximum()*1.1);
   hist[8][0]->Draw("PE");
   hist[7][1]->Draw("histsame");
   hist[7][2]->Draw("histsame");
-  histsum[8]->Draw("histsame");
+  //histsum[8]->Draw("histsame");
   myc[nVars+2]->Update();
   lname.str("");
   lname << "PLOTS/" << type << "_pTthird.pdf";
   myc[nVars+2]->Print(lname.str().c_str());
 
   myc[nVars+3]->cd();
-  histsum[9]->Add(hist[9][1],hist[9][2]);
-  histsum[9]->Scale(1./histsum[9]->Integral());
-  hist[9][0]->SetMaximum(histsum[9]->GetMaximum()*1.1);
+  //histsum[9]->Add(hist[9][1],hist[9][2]);
+  //histsum[9]->Scale(1./histsum[9]->Integral());
+  //hist[9][0]->SetMaximum(histsum[9]->GetMaximum()*1.1);
   hist[9][0]->Draw("PE");
   hist[9][1]->Draw("histsame");
   hist[9][2]->Draw("histsame");
-  histsum[9]->Draw("histsame");
+  //histsum[9]->Draw("histsame");
   myc[nVars+3]->Update();
   lname.str("");
   lname << "PLOTS/" << type << "_pTfourth.pdf";
