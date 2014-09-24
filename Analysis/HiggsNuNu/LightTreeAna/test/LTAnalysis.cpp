@@ -341,7 +341,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contdataextrasel(dataextrasel)
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
     .set_contcat(mumucat)//"nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120")
-    .set_contdataweight("weight_nolep*3.72")
+    .set_contdataweight("weight_nolep")
     .set_sigmainccontewk(303)
     .set_sigmainccontqcd(3503700./3)
     .set_sigmaincsigewk(460*3)
@@ -363,7 +363,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_sigmcweight("total_weight_leptight")
     .set_sigcat("m_mumu_gen>80&&m_mumu_gen<100"+zextrasigcat)
     .set_contcat(mumucat)
-    .set_contdataweight("weight_nolep*3.72");
+    .set_contdataweight("weight_nolep");
 ;//"nvetoelectrons==0 && nvetomuons==2 && nselmuons==2&&m_mumu>60&&m_mumu<120");
 
   //WBKG SHAPE GENERATION
@@ -386,7 +386,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
     .set_contcat(munucat)
-    .set_contdataweight("weight_nolep*3.72");
+    .set_contdataweight("weight_nolep");
   if((channel=="enu")||(channel=="munu")){
     wmunu.set_sigmcweight("total_weight_leptight");
   }
@@ -403,7 +403,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
     .set_contcat(enucat)
-    .set_contdataweight("weight_nolep*3.72");
+    .set_contdataweight("weight_nolep");
   if((channel=="enu")||(channel=="munu")){
     wenu.set_sigmcweight("total_weight_leptight");
   }
@@ -421,7 +421,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contcat(taunucat)//"ntaus>=1&&nvetoelectrons ==0 && nvetomuons==0&&lep_mt>20")
     .set_sigmcweight("total_weight_lepveto")
     .set_contmcweight("total_weight_lepveto")
-    .set_contdataweight("weight_nolep*3.72");
+    .set_contdataweight("weight_nolep");
   if((channel=="enu")||(channel=="munu")){
     wtaunu.set_sigmcweight("total_weight_leptight");
   }
@@ -475,7 +475,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_contbkgisz(QCDcontbkgisz)
     .set_sigmcweight("total_weight_lepveto")
     .set_contmcweight("total_weight_lepveto")
-    .set_contdataweight("weight_nolep*3.72")
+    .set_contdataweight("weight_nolep")
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
@@ -576,7 +576,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   std::vector<LTPlotElement> elementvec;
   LTPlotElement dataele;
   dataele.set_is_data(true)
-    .set_scale(19.7854/(0.889+11.581-7.152))//=3.72
+    .set_scale(1)
     .set_legname("Data")
     .set_is_inrationum(true)
     .set_sample("data_obs");

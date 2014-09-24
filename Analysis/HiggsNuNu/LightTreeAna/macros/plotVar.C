@@ -62,17 +62,17 @@ double deltaPhi(double jeta_phi, double jetb_phi){
 int plotVar() {
 
   //std::string fileName = "../../output_lighttree/Wjets_enu.root";
-  //std::string fileName = "../../output_lighttree/VBFPARKED.root";
-  std::string fileName = "../../output_lighttree/VBFQCD.root";
+  std::string fileName = "../../output_lighttree/VBFPARKED.root";
+  //std::string fileName = "../../output_lighttree/VBFQCD.root";
   //std::string fileName = "../../output_lighttree/MC_Powheg-Htoinv-mH125.root";
 
   //std::string type = "Wjets_enu";
-  //std::string type = "VBFPARKED";
-  std::string type = "VBFQCD";
+  std::string type = "VBFPARKED";
+  //std::string type = "VBFQCD";
   //std::string type = "VBFH125";
 
-  bool isMC = true;
-  //bool isMC = false;
+  //bool isMC = true;
+  bool isMC = false;
 
   TFile *data = TFile::Open(fileName.c_str(), "update");
   if (!data) {
@@ -147,7 +147,7 @@ int plotVar() {
     tree[iT]->SetBranchAddress("l1met",&l1met);
     tree[iT]->SetBranchAddress("jet1_pt",&jet1_pt);
     tree[iT]->SetBranchAddress("jet3_pt",&jet3_pt);
-    tree[iT]->SetBranchAddress("n_jets",&n_jets);
+    tree[iT]->SetBranchAddress("n_jets_30",&n_jets);
     tree[iT]->SetBranchAddress("metnomu_x",&metnomu_x);
     tree[iT]->SetBranchAddress("metnomu_y",&metnomu_y);
     tree[iT]->SetBranchAddress("dijet_M",&dijet_M);
@@ -250,7 +250,7 @@ int plotVar() {
     "dijetmetnomu_scalarSum_pt",
     "dijetmetnomu_vectorialSum_pt",
     "dijetmetnomu_ptfraction",
-    "n_jets",
+    "n_jets_30",
     "jet1_pdgid",
     "jet2_pdgid",
     "jet3_pdgid",   
@@ -315,7 +315,7 @@ int plotVar() {
       //bool passtrig = (!isMC && passtrigger==1 && l1met>40) || isMC;//MET data
       std::string passtrig = "((run>=190456 && run<=193621 && passtrigger==1) || (run>=193833 && run<=196531 &&passparkedtrigger1==1) || (run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40";
 
-      if (iT>0) selection << " n_jets>2 && ";
+      if (iT>0) selection << " n_jets_30>2 && ";
       selection << "is_dupl==0 && ";
       if (!isMC) selection << passtrig <<" && ";
       selection << "jet1_eta*jet2_eta<0 && dijet_M>=600 && (jet1_pt>50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";

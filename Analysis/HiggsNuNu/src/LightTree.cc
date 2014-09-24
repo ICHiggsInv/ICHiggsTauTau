@@ -299,8 +299,9 @@ namespace ic {
     std::vector<Electron*> vetoelectrons=event->GetPtrVec<Electron>("vetoElectrons");
     std::vector<Electron*> selelectrons=event->GetPtrVec<Electron>("selElectrons");
     std::vector<Tau*> taus=event->GetPtrVec<Tau>("taus");
-
-    metnomu_significance_ = met->et_sig()/met->pt()*metnomuons->pt();
+    
+    metnomuons_ = metnomuons->pt();
+    metnomu_significance_ = met->et_sig()/met->pt()*metnomuons_;
     ROOT::Math::PtEtaPhiEVector metnomuvec = metnomuons->vector();
     alljetsmetnomu_mindphi_=10;
     n_jets_15_ = 0;
@@ -314,7 +315,7 @@ namespace ic {
       if (jets[i]->pt()>15.0) n_jets_15_++;
     }
     //event must pass first part of selection
-    if (!passEventSel()) return 0;
+    if (!passEventSel()) return 1;
 
     nvetomuons_=vetomuons.size();
     nselmuons_=selmuons.size();
@@ -425,6 +426,7 @@ namespace ic {
 	    
 	    dijet_deta_ = fabs(jet1->eta() - jet2->eta());;
 	    dijet_dphi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(jet1vec,jet2vec));
+	    dijet_M_ = dijet->M();
 	    if (passTreeSelection()){
 	      dphivec.push_back(std::pair<unsigned,double>(iP,dijet_dphi_));
 	    }//pass sel
@@ -593,6 +595,7 @@ namespace ic {
 	outputTree_->Fill();
 	++processed;
       }
+      else return 1;
       if (processed == 500) outputTree_->OptimizeBaskets();
     }//if dijet found
     
