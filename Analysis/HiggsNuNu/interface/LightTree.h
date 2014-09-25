@@ -98,6 +98,11 @@ namespace ic {
     unsigned n_jets_30_;
     unsigned n_jets_cjv_30_;
     unsigned n_jets_cjv_20EB_30EE_;
+    double thrust_;
+    double thrust_minor_;
+    double thrust_met_;
+    double thrust_met_minor_;
+
     double passtrigger_;
     double passparkedtrigger1_;
     double passparkedtrigger2_;

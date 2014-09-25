@@ -6,6 +6,7 @@
 #include "UserCode/ICHiggsTauTau/interface/TriggerObject.hh"
 #include "UserCode/ICHiggsTauTau/interface/EventInfo.hh"
 #include "UserCode/ICHiggsTauTau/Analysis/Utilities/interface/FnPredicates.h"
+#include "UserCode/ICHiggsTauTau/Analysis/HiggsNuNu/interface/EventShape.h"
 #include "UserCode/ICHiggsTauTau/interface/city.h"
 #include "TVector3.h"
 
@@ -97,6 +98,11 @@ namespace ic {
     n_jets_cjv_30_ = 0;
     n_jets_cjv_20EB_30EE_ = 0;
     cjvjetpt_=-1;
+    thrust_=-1;
+    thrust_minor_=-1;
+    thrust_met_=-1;
+    thrust_met_minor_=-1;
+
     passtrigger_ = -1;
     passparkedtrigger1_ = -1;
     passparkedtrigger2_ = -1;
@@ -213,6 +219,10 @@ namespace ic {
     outputTree_->Branch("n_jets_cjv_30",&n_jets_cjv_30_);
     outputTree_->Branch("n_jets_cjv_20EB_30EE",&n_jets_cjv_20EB_30EE_);
     outputTree_->Branch("cjvjetpt",&cjvjetpt_);
+    outputTree_->Branch("thrust",&thrust_);
+    outputTree_->Branch("thrust_minor",&thrust_minor_);
+    outputTree_->Branch("thrust_met",&thrust_met_);
+    outputTree_->Branch("thrust_met_minor",&thrust_met_minor_);
     outputTree_->Branch("passtrigger",&passtrigger_);
     outputTree_->Branch("passparkedtrigger1",&passparkedtrigger1_);
     outputTree_->Branch("passparkedtrigger2",&passparkedtrigger2_);
@@ -306,16 +316,46 @@ namespace ic {
     alljetsmetnomu_mindphi_=10;
     n_jets_15_ = 0;
     n_jets_30_ = 0;
+    std::vector<double> Px_vector;
+    std::vector<double> Py_vector;
+    std::vector<double> Pz_vector;
+    std::vector<double> E_vector;
+    thrust_ = -1.0;
+    thrust_minor_ = -1.0;
+    thrust_met_ = -1.0;
+    thrust_met_minor_ = -1.0;
+
     for (unsigned i = 0; i < jets.size(); ++i) {
       if(jets[i]->pt()>30.0){
 	double thisjetmetnomudphi = fabs(ROOT::Math::VectorUtil::DeltaPhi(jets[i]->vector(),metnomuvec));
 	if(thisjetmetnomudphi<alljetsmetnomu_mindphi_)alljetsmetnomu_mindphi_=thisjetmetnomudphi;
 	n_jets_30_++;
+	Px_vector.push_back(jets[i]->vector().Px());
+	Py_vector.push_back(jets[i]->vector().Py());
+	Pz_vector.push_back(jets[i]->vector().Pz());
+	E_vector.push_back(jets[i]->vector().E());
       }
       if (jets[i]->pt()>15.0) n_jets_15_++;
     }
     //event must pass first part of selection
     if (!passEventSel()) return 1;
+
+    //event shape variables
+    EventShape evtShape(Px_vector,Py_vector,Pz_vector,E_vector,10000,1);
+    if (evtShape.getEventShapes().size()>1){
+      thrust_ = log(evtShape.getEventShapes()[0]);
+      thrust_minor_ = log(evtShape.getEventShapes()[1]);
+    }
+    Px_vector.push_back(metnomuvec.Px());
+    Py_vector.push_back(metnomuvec.Py());
+    Pz_vector.push_back(0);
+    E_vector.push_back(metnomuvec.Pt());
+    EventShape evtShapeMet(Px_vector,Py_vector,Pz_vector,E_vector,10000,1);
+    if (evtShapeMet.getEventShapes().size()>1){
+      thrust_met_ = log(evtShapeMet.getEventShapes()[0]);
+      thrust_met_minor_ = log(evtShapeMet.getEventShapes()[1]);
+    }
+
 
     nvetomuons_=vetomuons.size();
     nselmuons_=selmuons.size();
@@ -605,7 +645,7 @@ namespace ic {
   bool LightTree::passEventSel(){
     //    return jetmetnomu_mindphi_>1.5 && metnomu_significance_ > 3.0 &&  dijet_deta_>3.6;
     //return alljetsmetnomu_mindphi_>1 && metnomu_significance_ > 3.0;
-    return metnomuons_ > 60 && metnomu_significance_ > 3.0;
+    return metnomuons_ > 60 && metnomu_significance_ > 2.0;
   }
 
   bool LightTree::passDijetSel(){

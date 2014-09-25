@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
   std::string basesel;
   std::string channel;
   std::string treename;
+  double signalf = 1.0;
 
   po::options_description preconfig("Configuration"); 
   preconfig.add_options()("cfg",po::value<std::string>(&cfg)->required());
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]){
     ("filelist,f",               po::value<std::string>(&filelist)->default_value("filelists/filelist.dat"))
     ("basesel",                  po::value<std::string>(&basesel)->default_value("jet1_eta*jet2_eta<0 && jet1_eta<4.7 && jet2_eta<4.7 && dijet_M>=600&&jet1_pt>50&&dijet_deta>3.6&& jet2_pt>60&&metnomuons>60&&metnomu_significance>3&&jetmetnomu_mindphi>1.5"))
     ("treename",                 po::value<std::string>(&treename)->default_value("LightTree"))
+    ("signalFactor",             po::value<double>(&signalf)->default_value(1.))
     ("channel",                  po::value<std::string>(&channel)->default_value("nunu"));
 
   po::store(po::command_line_parser(argc, argv).options(config).allow_unregistered().run(), vm);
@@ -112,12 +114,12 @@ int main(int argc, char* argv[]){
   shape.push_back("jet1_pt(28,20.,300.)");  histTitle.push_back(";p_{T}^{j1} (GeV);entries");
   shape.push_back("jet2_pt(28,20.,300.)");  histTitle.push_back(";p_{T}^{j2} (GeV);entries");
   shape.push_back("jet3_pt(29,5.,295.)");  histTitle.push_back(";p_{T}^{j3} (GeV);entries");
-  shape.push_back("metnomuons(25,50.,300.)"); histTitle.push_back(";METnoMu (GeV);entries");
+  shape.push_back("metnomuons(25,80.,300.)"); histTitle.push_back(";METnoMu (GeV);entries");
   //shape.push_back("l1met(20,00.,200.)");histTitle.push_back(";L1MET (GeV);entries");
-  shape.push_back("dijet_M(14,600.,2000.)");histTitle.push_back(";M_{jj} (GeV);entries");
+  shape.push_back("dijet_M(14,700.,2000.)");histTitle.push_back(";M_{jj} (GeV);entries");
   shape.push_back("jetmetnomu_mindphi(60,0,3.1416)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
-  shape.push_back("alljetsmetnomu_mindphi(41,0.94646,3.1416)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
-  shape.push_back("metnomu_significance(51,2.9,8.)");histTitle.push_back(";METnoMu/#sigma(METnoMu);entries");
+  shape.push_back("alljetsmetnomu_mindphi(60,0,3.1416)");histTitle.push_back(";min #Delta#phi(j,METnoMu);entries");
+  shape.push_back("metnomu_significance(101,2.9,13.)");histTitle.push_back(";METnoMu/#sigma(METnoMu);entries");
   //shape.push_back("dijet_sumeta(50,-10,10)");histTitle.push_back(";#eta_{j1}+#eta_{j2};entries");
   shape.push_back("ht(50,0,1000)");histTitle.push_back(";H_{T} (GeV);entries");
   //shape.push_back("jetunclet_mindphi(32,0,3.2)");histTitle.push_back(";min #Delta#phi(j,E_{T}^{uncl});entries");
@@ -125,16 +127,17 @@ int main(int argc, char* argv[]){
   shape.push_back("dijetmetnomu_scalarSum_pt(70,0,1400)");histTitle.push_back(";p_{T}^{jeta}+p_{T}^{jetb}+METnoMu;entries");
   shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");histTitle.push_back(";p_{T}(#vec{ja}+#vec{jb}+#vec{METnoMu});entries");
   shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");histTitle.push_back(";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu);entries");
-  shape.push_back("n_jets(10,0,10)");histTitle.push_back(";njets (p_{T}>15 GeV);entries");
+  shape.push_back("n_jets_30(10,0,10)");histTitle.push_back(";njets (p_{T}>30 GeV);entries");
+  shape.push_back("n_jets_15(10,0,10)");histTitle.push_back(";njets (p_{T}>15 GeV);entries");
   shape.push_back("n_jets_cjv_30(10,0,10)");histTitle.push_back(";CJV jets (30 GeV);entries");
   //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");histTitle.push_back(";CJV jets (20 GeV EB, 30 GeV EE);entries");
-  shape.push_back("dijet_dphi(30,0.,3.)");histTitle.push_back(";#Delta#phi_{jj};entries");
+  shape.push_back("dijet_dphi(30,0.,3.1416)");histTitle.push_back(";#Delta#phi_{jj};entries");
   shape.push_back("dijet_deta(18,3.4,7.)");histTitle.push_back(";#Delta#eta_{jj};entries");
-  shape.push_back("jet1_csv(50,0,1.)");histTitle.push_back(";CSV (jet 1);entries");
-  shape.push_back("jet2_csv(50,0,1.)");histTitle.push_back(";CSV (jet 2);entries");
-  shape.push_back("jet3_csv(50,0,1.)");histTitle.push_back(";CSV (jet 3);entries");
+  shape.push_back("jet1_csv(51,0,1.02)");histTitle.push_back(";CSV (jet 1);entries");
+  shape.push_back("jet2_csv(51,0,1.02)");histTitle.push_back(";CSV (jet 2);entries");
+  shape.push_back("jet3_csv(51,0,1.02)");histTitle.push_back(";CSV (jet 3);entries");
   shape.push_back("m_mumu(60,60,120)");histTitle.push_back(";M_{#mu#mu} (GeV);entries");
-  shape.push_back("lep_mt(20,0.,100.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
+  shape.push_back("lep_mt(50,0.,200.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
 
   assert(shape.size() == histTitle.size());
 
@@ -662,12 +665,15 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
     .set_legname("Top")
     .set_sample("top");
 
+  std::ostringstream legname;
+  legname << "Signal #times " << signalf; 
+
   LTPlotElement sigele;
   sigele.set_is_data(false)
-    .set_scale(20)
+    .set_scale(signalf)
     .set_color(kRed)
     .set_in_stack(false)
-    .set_legname("Signalx20")
+    .set_legname(legname.str())
     .set_sample("qqH");
 
   elementvec.push_back(dataele);

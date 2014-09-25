@@ -80,6 +80,7 @@ double qcdWeight(double aVar){
   else return 1;
   */
   //dphijj
+  /*
   if (aVar>0 &&  aVar <=0.1) return 0.143877;//// 0.0162334
   else if (aVar>0.1 &&  aVar <=0.2) return 0.142455;//// 0.0162577
   else if (aVar>0.2 &&  aVar <=0.3) return 0.154856;//// 0.0166426
@@ -110,9 +111,70 @@ double qcdWeight(double aVar){
   else if (aVar>2.7 &&  aVar <=2.8) return 1.24828;//// 0.380992
   else if (aVar>2.8 &&  aVar <=2.9) return 0.80586;//// 0.38304
   else if (aVar>2.9 &&  aVar <=3) return 0.267529;//// 0.310501
-  
+  */
+  //mindphi_j1j2met
+if (aVar>0 &&  aVar <=0.05236) return 1.77429;//// 0.0285863
+else if (aVar>0.05236 &&  aVar <=0.10472) return 1.81757;//// 0.0306516
+else if (aVar>0.10472 &&  aVar <=0.15708) return 1.90692;//// 0.0365168
+else if (aVar>0.15708 &&  aVar <=0.20944) return 1.97956;//// 0.0453416
+else if (aVar>0.20944 &&  aVar <=0.2618) return 2.0237;//// 0.055573
+else if (aVar>0.2618 &&  aVar <=0.31416) return 2.05141;//// 0.0680555
+else if (aVar>0.31416 &&  aVar <=0.36652) return 2.08484;//// 0.0869034
+else if (aVar>0.36652 &&  aVar <=0.41888) return 1.99372;//// 0.0981167
+else if (aVar>0.41888 &&  aVar <=0.47124) return 1.92691;//// 0.12008
+else if (aVar>0.47124 &&  aVar <=0.5236) return 1.6321;//// 0.108482
+else if (aVar>0.5236 &&  aVar <=0.57596) return 1.50407;//// 0.109121
+else if (aVar>0.57596 &&  aVar <=0.62832) return 1.35802;//// 0.110702
+else if (aVar>0.62832 &&  aVar <=0.68068) return 1.27123;//// 0.113009
+else if (aVar>0.68068 &&  aVar <=0.73304) return 1.01642;//// 0.0944162
+else if (aVar>0.73304 &&  aVar <=0.7854) return 1.07142;//// 0.123253
+else if (aVar>0.7854 &&  aVar <=0.83776) return 0.813294;//// 0.0869153
+else if (aVar>0.83776 &&  aVar <=0.89012) return 0.649379;//// 0.0676864
+else if (aVar>0.89012 &&  aVar <=0.94248) return 0.689959;//// 0.0842654
+else if (aVar>0.94248 &&  aVar <=0.99484) return 0.650578;//// 0.0801251
+else if (aVar>0.99484 &&  aVar <=1.0472) return 0.602928;//// 0.0771214
+else if (aVar>1.0472 &&  aVar <=1.09956) return 0.529747;//// 0.0663426
+else if (aVar>1.09956 &&  aVar <=1.15192) return 0.478993;//// 0.0700237
+else if (aVar>1.15192 &&  aVar <=1.20428) return 0.464871;//// 0.0649029
+else if (aVar>1.20428 &&  aVar <=1.25664) return 0.496775;//// 0.0777062
+else if (aVar>1.25664 &&  aVar <=1.309) return 0.420256;//// 0.06702
+else if (aVar>1.309 &&  aVar <=1.36136) return 0.41736;//// 0.0757746
+else if (aVar>1.36136 &&  aVar <=1.41372) return 0.318631;//// 0.0573408
+else if (aVar>1.41372 &&  aVar <=1.46608) return 0.416459;//// 0.0671769
+else if (aVar>1.46608 &&  aVar <=1.51844) return 0.446135;//// 0.0781064
+else if (aVar>1.51844 &&  aVar <=1.5708) return 0.432387;//// 0.0760104
+else if (aVar>1.5708 &&  aVar <=1.62316) return 0.341891;//// 0.0708654
+else if (aVar>1.62316 &&  aVar <=1.67552) return 0.411269;//// 0.0828041
+else if (aVar>1.67552 &&  aVar <=1.72788) return 0.538317;//// 0.085166
+else if (aVar>1.72788 &&  aVar <=1.78024) return 0.395874;//// 0.0821543
+else if (aVar>1.78024 &&  aVar <=1.8326) return 0.500289;//// 0.105725
+else if (aVar>1.8326 &&  aVar <=1.88496) return 0.595132;//// 0.10996
+else if (aVar>1.88496 &&  aVar <=1.93732) return 0.492405;//// 0.0935388
+else if (aVar>1.93732 &&  aVar <=1.98968) return 0.427878;//// 0.0887358
+else if (aVar>1.98968 &&  aVar <=2.04204) return 0.413447;//// 0.0882058
+else if (aVar>2.04204 &&  aVar <=2.0944) return 0.434929;//// 0.0845145
+else if (aVar>2.0944 &&  aVar <=2.14676) return 0.368647;//// 0.0867877
+else if (aVar>2.14676 &&  aVar <=2.19912) return 0.442155;//// 0.0774579
+else if (aVar>2.19912 &&  aVar <=2.25148) return 0.471863;//// 0.0837436
+else if (aVar>2.25148 &&  aVar <=2.30384) return 0.324949;//// 0.0654281
+else if (aVar>2.30384 &&  aVar <=2.3562) return 0.464887;//// 0.081463
+else if (aVar>2.3562 &&  aVar <=2.40856) return 0.339325;//// 0.0725929
+else if (aVar>2.40856 &&  aVar <=2.46092) return 0.314148;//// 0.0705466
+else if (aVar>2.46092 &&  aVar <=2.51328) return 0.378439;//// 0.0671156
+else if (aVar>2.51328 &&  aVar <=2.56564) return 0.282832;//// 0.062221
+else if (aVar>2.56564 &&  aVar <=2.618) return 0.175896;//// 0.0552767
+else if (aVar>2.618 &&  aVar <=2.67036) return 0.1828;//// 0.0521285
+else if (aVar>2.67036 &&  aVar <=2.72272) return 0.199943;//// 0.0522814
+else if (aVar>2.72272 &&  aVar <=2.77508) return 0.213227;//// 0.0517293
+else if (aVar>2.77508 &&  aVar <=2.82744) return 0.2273;//// 0.0489419
+else if (aVar>2.82744 &&  aVar <=2.8798) return 0.156259;//// 0.0498699
+else if (aVar>2.8798 &&  aVar <=2.93216) return 0.098822;//// 0.0449051
+else if (aVar>2.93216 &&  aVar <=2.98452) return 0.200001;//// 0.0516363
+else if (aVar>2.98452 &&  aVar <=3.03688) return 0.215024;//// 0.0557044
+else if (aVar>3.03688 &&  aVar <=3.08924) return 0.239018;//// 0.0746044
+else if (aVar>3.08924 &&  aVar <=3.1416) return 0.162946;//// 0.106139
 
-  return 1;
+ return 1;
 
 };
 
@@ -121,10 +183,10 @@ int dataDrivenQCD() {
   std::string fileName = "../../output_lighttree/VBFPARKED.root";//_MET-2012A-22Jan2013-v1.root";
   //std::string fileName = "../../output/MC_Powheg-Htoinv-mH125.root";
 
-  std::string type = "DataMC_PARKED";//_rwdphijj";
+  bool doReweighting = false;
+  std::string type = "DataMC_PARKED";//_rwmindphi";
   //std::string type = "VBFH125";
-
-  unsigned varIdx = 3;
+  unsigned varIdx = 5;
 
   const unsigned nTrees = 3;
   std::string label[nTrees] = {"j1j2","j1j3","qcd"};
@@ -156,9 +218,12 @@ int dataDrivenQCD() {
   double passparkedtrigger2;
   double l1met;
   double jet1_pt;
+  double jet2_pt;
   double jet3_pt;
   double dijet_M;
   double dijet_dphi;
+  double mindphi;
+  double allmindphi;
   double jet1_eta;
   double jet2_eta;
   double metnomuons;
@@ -166,7 +231,8 @@ int dataDrivenQCD() {
   int nselmuons;
   int nvetoelectrons;
   int nselelectrons;
-  unsigned n_jets;
+  unsigned n_jets_30;
+  unsigned n_jets_15;
   int is_dupl = 0;
   double qcdW = 1.;
 
@@ -196,9 +262,12 @@ int dataDrivenQCD() {
     tree[iT]->SetBranchAddress("passparkedtrigger2",&passparkedtrigger2);
     tree[iT]->SetBranchAddress("l1met",&l1met);
     tree[iT]->SetBranchAddress("jet1_pt",&jet1_pt);
+    tree[iT]->SetBranchAddress("jet2_pt",&jet2_pt);
     tree[iT]->SetBranchAddress("jet3_pt",&jet3_pt);
     tree[iT]->SetBranchAddress("dijet_M",&dijet_M);
     tree[iT]->SetBranchAddress("dijet_dphi",&dijet_dphi);
+    tree[iT]->SetBranchAddress("jetmetnomu_mindphi",&mindphi);
+    tree[iT]->SetBranchAddress("alljetsmetnomu_mindphi",&allmindphi);
     tree[iT]->SetBranchAddress("jet1_eta",&jet1_eta);
     tree[iT]->SetBranchAddress("jet2_eta",&jet2_eta);
     tree[iT]->SetBranchAddress("metnomuons",&metnomuons);
@@ -206,7 +275,8 @@ int dataDrivenQCD() {
     tree[iT]->SetBranchAddress("nselmuons",&nselmuons);
     tree[iT]->SetBranchAddress("nvetoelectrons",&nvetoelectrons);
     tree[iT]->SetBranchAddress("nselelectrons",&nselelectrons);
-    tree[iT]->SetBranchAddress("n_jets",&n_jets);
+    tree[iT]->SetBranchAddress("n_jets_30",&n_jets_30);
+    tree[iT]->SetBranchAddress("n_jets_15",&n_jets_15);
 
     std::cout << " Jet pair " << label[iT] << " has " << nEntries[iT] << " entries in tree." << std::endl;
     
@@ -214,11 +284,12 @@ int dataDrivenQCD() {
       tree[iT]->GetEntry(iE);
       is_dupl = 0;
       bool passtrig = ((run>=190456 && run<=193621 &&passtrigger==1) || (run>=193833 && run<=196531 && passparkedtrigger1==1) ||(run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40;//parked
-      bool passpT = (iT==0 && jet1_pt > 50) || iT>0;
-      bool passnj = (iT==0) || (iT>0 && n_jets>2);
-      qcdW = qcdWeight(dijet_dphi);
+      //bool passpT = (iT==0 && jet1_pt > 50) || iT>0;
+      bool passpT = jet1_pt > 50 && jet2_pt > 40;
+      bool passnj = (iT==0) || (iT>0 && n_jets_30>2);
+      qcdW = qcdWeight(mindphi);
 
-      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=600 && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
+      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && mindphi > 1.5){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -227,21 +298,21 @@ int dataDrivenQCD() {
 	if (!isInserted.second){
 	  is_dupl = 1;
 	  if (iT==0)
-	    duplicateJ1J2 += 3.72;
+	    duplicateJ1J2 += 1;
 	  else if (iT==1)
-	    duplicateJ1J3 += 3.72;
+	    duplicateJ1J3 += 1;
 	  else 
-	    duplicateJ2J3 += 3.72;
+	    duplicateJ2J3 += 1;
 	}
 	else {
 	  if (iT==0)
-	    passJ1J2 += 3.72;
+	    passJ1J2 += 1;
 	  else if (iT==1){
-	    passJ1J3 += 3.72;
+	    passJ1J3 += 1;
 	    evtSet.erase(lEvt);
 	  }
 	  else 
-	    passJ2J3 += 3.72;
+	    passJ2J3 += 1;
 	}
       }//pass sel
       //if (iE<10){
@@ -267,7 +338,7 @@ int dataDrivenQCD() {
 	    << label[2]<< " & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
     ;
 
-  const unsigned nVars = 17;
+  const unsigned nVars = 19;
   std::string vars[nVars] = {
     "dijet_M",
     "metnomuons",	     
@@ -275,6 +346,7 @@ int dataDrivenQCD() {
     "dijet_dphi",
     "metnomu_significance",
     "jetmetnomu_mindphi",
+    "alljetsmetnomu_mindphi",
     "jet1_pt",
     "jet2_pt",
     "jet3_pt",
@@ -284,7 +356,8 @@ int dataDrivenQCD() {
     "dijetmetnomu_scalarSum_pt",
     "dijetmetnomu_vectorialSum_pt",
     "dijetmetnomu_ptfraction",
-    "n_jets",
+    "n_jets_30",
+    "n_jets_15",
     "n_jets_cjv_30"
   };
 
@@ -294,7 +367,8 @@ int dataDrivenQCD() {
     ";#Delta#eta_{jj}",
     ";#Delta#phi_{jj}",
     ";METnoMu/#sigma(METnoMu)",
-    ";min #Delta#phi(j,METnoMu)",
+    ";min #Delta#phi(ja-jb,METnoMu)",
+    ";min #Delta#phi(all jets,METnoMu)",
     ";p_{T}^{j1} (GeV)",
     ";p_{T}^{j2} (GeV)",
     ";p_{T}^{j3} (GeV)",
@@ -305,12 +379,13 @@ int dataDrivenQCD() {
     ";p_{T}(#vec{j1}+#vec{j2}+#vec{METnoMu})",
     ";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu)",
     ";n_{jets} (p_{T}>30 GeV)",
+    ";n_{jets} (p_{T}>15 GeV)",
     ";CJV jets (30 GeV)"
   };
 
   //unsigned nbins[nVars] = {75,100,44,30,35,30,50,50,100,50,50,10};
-  float min[nVars] = {0,0,3.6,0,3,1.5,30,30,30,0,0,0,0,0,0,0,0};
-  float max[nVars] = {3000,500,8,3.1416,10,3.1416,300,300,300,1,1,1,1000,400,1,10,10};  
+  float min[nVars] = {0,0,3.6,0,3,0,0,30,30,30,0,0,0,0,0,0,0,0,0};
+  float max[nVars] = {3000,500,8,3.1416,10,3.1416,3.1416,300,300,300,1,1,1,1000,400,1,10,10,10};  
 
   TH1F *hist[nVars][nTrees];
   TH1F *histsum[nVars];
@@ -388,17 +463,18 @@ int dataDrivenQCD() {
 
       std::ostringstream selection;
       std::string passtrig = "(((run>=190456 && run<=193621 && passtrigger==1) || (run>=193833 && run<=196531 &&passparkedtrigger1==1) || (run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40)";
-      std::string passpT = "(jet1_pt > 50)";
+      std::string passpT = "(jet1_pt > 50 && jet2_pt > 40)";
 
       selection << "( ";
-      if (iT>0) selection << "n_jets>2 && ";
+      if (iT>0) selection << "n_jets_30>2 && ";
       selection << "is_dupl==0 && ";
       selection << passtrig <<" && ";
-      if (iT==0) selection << passpT << " && ";
-      selection << "jet1_eta*jet2_eta<0 && dijet_M>=600 && (jet1_pt>50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
+      //if (iT==0) 
+	selection << passpT << " && ";
+	selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && jetmetnomu_mindphi>1.5";
       selection << " )";
-      //if (iT>0) selection << " * (qcdW)";
-      selection << " * (3.72)";
+      if (iT==2 && doReweighting) selection << " * (qcdW)";
+      //selection << " * (1)";
       lname.str("");
       lname << "p_" << vars[iV] << "_" << label[iT];
       //hist[iV][iT] = new TH1F(lname.str().c_str(),xaxis[iV].c_str(),nbins[iV],min[iV],max[iV]);
@@ -410,9 +486,9 @@ int dataDrivenQCD() {
       lname.str("");
       lname << vars[iV] << ">>p_" << vars[iV] << "_" << label[iT];
       tree[iT]->Draw(lname.str().c_str(),selection.str().c_str(),"");
-      if (iV==6 && iT==0) {
+      if (iV==7 && iT==0) {
 	lname.str("");
-	lname << vars[7] << ":" << vars[6] << ">>weight2D";// << label[iT];
+	lname << vars[8] << ":" << vars[7] << ">>weight2D";// << label[iT];
 	tree[iT]->Draw(lname.str().c_str(),selection.str().c_str(),"");
       }
 
@@ -438,7 +514,7 @@ int dataDrivenQCD() {
 
     TH1F *histTmp = (TH1F*)histDataSubtr[iV][0]->Clone("histTmp");
     //histTmp->Sumw2();
-    histTmp->Divide(histsum[iV]);
+    histTmp->Divide(histDataSubtr[iV][2]);
     grWeight[iV] = new TGraphErrors(histTmp);
 
     histsumSubtr[iV] = (TH1F*)histDataSubtr[iV][2]->Clone("histsumSubtr");
@@ -540,7 +616,7 @@ int dataDrivenQCD() {
 	      << grWeight[varIdx]->GetErrorY(iP)
 	      << std::endl;
   }
-  mycpT1->Print("qcd_reweighting_with_dphijj.pdf");
+  mycpT1->Print("qcd_reweighting_with_mindphi.pdf");
 
   TCanvas *mycpT12 = new TCanvas("pt1pt2","pt1pt2",1);
   mycpT12->cd();

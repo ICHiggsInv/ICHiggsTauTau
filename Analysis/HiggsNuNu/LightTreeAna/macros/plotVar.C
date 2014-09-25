@@ -189,7 +189,7 @@ int plotVar() {
 
       bool passnj = (iT==0) || (iT>0 && n_jets>2);
 
-      if (passtrig && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=600 && (jet1_pt > 50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
+      if (passtrig && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && (jet1_pt > 50) && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -318,7 +318,7 @@ int plotVar() {
       if (iT>0) selection << " n_jets_30>2 && ";
       selection << "is_dupl==0 && ";
       if (!isMC) selection << passtrig <<" && ";
-      selection << "jet1_eta*jet2_eta<0 && dijet_M>=600 && (jet1_pt>50 || jet3_pt>50) && metnomuons>60 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
+      selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && (jet1_pt>50) && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
       
       lname.str("");
       lname << "p_" << vars[iV] << "_" << label[iT];
