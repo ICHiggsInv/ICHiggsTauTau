@@ -79,9 +79,10 @@ namespace ic{
     double effcvbfewk=ncmcewk/ngenincewk_;
     double effcvbfqcd=ncmcqcd/ngenincqcd_;
     double baseweight=(ncdata-ncbkg)/(sigmainccontewk_*effcvbfewk+sigmainccontqcd_*effcvbfqcd);
-
     double ewkweight=baseweight*sigmaincsigewk_/ngenmassfilteredewk_;
     double qcdweight=baseweight*sigmaincsigqcd_/ngenmassfilteredqcd_;
+    std::cout<<"(NCData-NCBkg)/(NCMCEWK+NCMCQCD): "<<(ncdata-ncbkg)/(ncmcewk+ncmcqcd)<<" n.b. this is not directly used in calculation due to mumu nunu cross-section reweighting procedure"<<std::endl;
+
     TVectorD weightvec(2);
 
     for(unsigned iShape=0;iShape<shape_.size();iShape++){
@@ -101,13 +102,13 @@ namespace ic{
       weightvec[1]=sigcontextrafactor_*qcdweight;
       sigmcewkshape.Scale(sigcontextrafactor_*ewkweight);//baseweight*sigmaincsigewk_/ngenmassfilteredewk_);
       sigmcqcdshape.Scale(sigcontextrafactor_*qcdweight);//baseweight*sigmaincsigqcd_/ngenmassfilteredqcd_);
-
-      std::cout<<"NSMC EWK: "<<Integral(&sigmcewkshape) <<" NSMC QCD: "<<Integral(&sigmcqcdshape)<<std::endl;
+      if(iShape==0)std::cout<<"NSMC EWK: "<<Integral(&sigmcewkshape) <<" NSMC QCD: "<<Integral(&sigmcqcdshape)<<std::endl;
      
       //!!MAKE OVERALL SIGMCSHAPE HISTO
       //Get binning info from shape
       std::vector<std::string> strs;
-      boost::split(strs, shape_[iShape], boost::is_any_of("(,)"));
+      std::string binstr=shape_[iShape].substr(shape_[iShape].find_last_of("("));
+      boost::split(strs, binstr, boost::is_any_of("(,)"));
       TH1F* sigmcshape=new TH1F(histname.c_str(),histname.c_str(),boost::lexical_cast<int>(strs[1]),boost::lexical_cast<double>(strs[2]),boost::lexical_cast<double>(strs[3]));
       sigmcshape->Add(&sigmcewkshape,&sigmcqcdshape);
       sigmcshape->SetName(histname.c_str());

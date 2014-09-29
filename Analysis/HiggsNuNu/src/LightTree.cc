@@ -79,6 +79,7 @@ namespace ic {
     jet2metnomu_dphi_ = 0;
     jetmet_mindphi_ = 0;
     jetmetnomu_mindphi_ = 0;
+    alljetsmet_mindphi_ = 0;
     alljetsmetnomu_mindphi_ = 0;
     jetunclet_mindphi_ = 0;
     metunclet_dphi_ = 0;
@@ -200,6 +201,7 @@ namespace ic {
     outputTree_->Branch("jet2metnomu_dphi",&jet2metnomu_dphi_);
     outputTree_->Branch("jetmet_mindphi",&jetmet_mindphi_);
     outputTree_->Branch("jetmetnomu_mindphi",&jetmetnomu_mindphi_);
+    outputTree_->Branch("alljetsmet_mindphi",&alljetsmet_mindphi_);
     outputTree_->Branch("alljetsmetnomu_mindphi",&alljetsmetnomu_mindphi_);
     outputTree_->Branch("jetunclet_mindphi",&jetunclet_mindphi_);
     outputTree_->Branch("metunclet_dphi",&metunclet_dphi_);
@@ -582,6 +584,7 @@ namespace ic {
       jet3_pdgid_ = 0;
       jet4_pdgid_ = 0;
       alljetsmetnomu_mindphi_=jetmetnomu_mindphi_;
+      alljetsmet_mindphi_=jetmet_mindphi_;
       if (jets.size() >= 2) {
 	for (unsigned i = 0; i < jets.size(); ++i) {
 	  if(jets[i]->id()==jet1->id()){
@@ -590,6 +593,7 @@ namespace ic {
 
 	  }
 	  if(jets[i]->id()==jet2->id()){
+<<<<<<< HEAD
 	    jet2_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
 	    if(!is_data_) jet2_pdgid_ = jets[i]->parton_flavour();
 	  }
