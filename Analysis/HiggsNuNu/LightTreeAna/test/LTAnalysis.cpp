@@ -138,6 +138,10 @@ int main(int argc, char* argv[]){
   shape.push_back("jet3_csv(51,0,1.02)");histTitle.push_back(";CSV (jet 3);entries");
   shape.push_back("m_mumu(60,60,120)");histTitle.push_back(";M_{#mu#mu} (GeV);entries");
   shape.push_back("lep_mt(50,0.,200.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
+  shape.push_back("thrust(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
+  shape.push_back("thrust_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
+  shape.push_back("thrust_met(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
+  shape.push_back("thrust_met_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
 
   assert(shape.size() == histTitle.size());
 
@@ -193,8 +197,8 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   std::string sigcat;
   std::string zextrasigcat;
 
-  std::string nunucat="nvetomuons==0&&nvetoelectrons==0";
-  std::string nunuzcat="";
+  std::string nunucat="nvetomuons==0&&nvetoelectrons==0 && thrust > -5";
+  std::string nunuzcat=" && thrust > -5";
   
   std::string mumucat="nselmuons==2&&nvetomuons==2&&nvetoelectrons==0&&m_mumu>60&&m_mumu<120";
   std::string mumuzcat="&&nselmuons==2&&nvetomuons==2&&m_mumu>60&&m_mumu<120";//zmumu
@@ -208,8 +212,10 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   std::string taunucat="ntaus==1&&nvetomuons==0&&nvetoelectrons==0&&lep_mt>20";
   std::string taunuzcat="&&ntaus==1&&nvetoelectrons==0";//wtau
 
-  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&dijetmetnomu_ptfraction>0.6";
-    std::string qcdzcat="&&dijetmetnomu_ptfraction>0.6";//QCD
+  //std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&dijetmetnomu_ptfraction>0.6";
+  //std::string qcdzcat="&&dijetmetnomu_ptfraction>0.6";//QCD
+  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&thrust<-5";
+  std::string qcdzcat="&&thrust<-5";//QCD
 
   if(channel=="nunu"){//nunu
     sigcat=nunucat;
@@ -466,7 +472,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
 
-
+  /*
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("VBF-QCD")//VBF-QCD")
     .set_shape(shape)
@@ -487,6 +493,27 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   if(channel=="enu"||channel=="munu"){
     QCD.set_sigmcweight("total_weight_leptight");
   }
+  */
+
+  //QCD from DATA SHAPE GENERATION
+  DataNormShape QCD("QCD");
+  QCD.set_sigmcset(dataset)//VBF-QCD")
+    .set_shape(shape)
+    .set_dirname("qcd")
+    .set_contmcset(dataset)//VBF-QCD")
+    .set_contdataset(dataset)
+    .set_contbkgset(QCDcontbkgsets)
+    .set_contbkgextrafactordir(QCDcontbkgextrafactordir)
+    .set_contbkgisz(QCDcontbkgisz)
+    .set_sigmcweight("weight_nolep")
+    .set_contmcweight("weight_nolep")
+    .set_contdataweight("weight_nolep")
+    .set_basesel(analysis->baseselection())
+    .set_contdataextrasel(dataextrasel)
+    .set_sigcat(qcdcat+dataextrasel)
+    .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100")
+    .set_contcat(nunucat);
+
 
   //NORMALISED PLOTS FOR REFEREE
   std::vector<std::string> ewksets; //List of sets for ewk
@@ -631,7 +658,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
 
   LTPlotElement qcdele;
   qcdele.set_is_data(false)
-    .set_scale(1)
+    .set_scale((64903-16011.1)/13016.8)
     .set_color(kMagenta-10)
     .set_in_stack(true)
     .set_is_inratioden(true)
@@ -682,7 +709,7 @@ shape.push_back("jet2_pt(14,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);e
   elementvec.push_back(wtaunuele);
   //  elementvec.push_back(zmumuele);
   elementvec.push_back(znunuele);
-  //elementvec.push_back(qcdele);
+  elementvec.push_back(qcdele);
   elementvec.push_back(vvele);
   elementvec.push_back(wgele);
   elementvec.push_back(topele);

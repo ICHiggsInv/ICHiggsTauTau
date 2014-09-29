@@ -130,7 +130,8 @@ namespace ic{
     double ncdata = Integral(&contdatashape);
     double ncbkg = Integral(&contbkgshape);
 
-
+    std::cout << " nCMC = " << ncmc << ", nCdata= " << ncdata << ", nCbkg = " << ncbkg
+	      << ", nCdata-nCbkg = " << ncdata-ncbkg << std::endl;
     //Calculate weight
     double weight=(ncdata-ncbkg)/ncmc;
     std::cout<<"  weight: "<<weight<<std::endl;
