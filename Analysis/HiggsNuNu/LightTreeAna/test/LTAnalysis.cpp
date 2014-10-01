@@ -154,7 +154,6 @@ int main(int argc, char* argv[]){
   if(channel!="taunu"){
 =======
   if(!(channel=="taunu"||channel=="top")){
->>>>>>> master
     shape.push_back("jet2_pt(27,30.,300.)");histTitle.push_back(";p_{T}^{j1} (GeV);entries");
     shape.push_back("jet1_pt(27,30.,300.)");histTitle.push_back(";p_{T}^{j2} (GeV);entries");
     shape.push_back("metnomuons(25,50.,300.)");histTitle.push_back(";METnoMu (GeV);entries");
@@ -210,7 +209,6 @@ int main(int argc, char* argv[]){
     shape.push_back("lep_mt(10,0.,100.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
     shape.push_back("dijetmetnomu_ptfraction(10,0.,1.)");histTitle.push_back(";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu);entries");
   }
-<<<<<<< HEAD
   */
 
   //  std::string dataset="SPLITPARKEDPLUSA";
@@ -219,8 +217,8 @@ int main(int argc, char* argv[]){
   std::string sigcat;
   std::string zextrasigcat;
 
-  std::string nunucat=("nvetomuons==0&&nvetoelectrons==0 && thrust > -5&&"+jetmetdphicut);
-  std::string nunuzcat=" && thrust > -5&&"+jetmetdphicut;
+  std::string nunucat=("nvetomuons==0&&nvetoelectrons==0&&"+jetmetdphicut);
+  std::string nunuzcat="&&"+jetmetdphicut;
   
   std::string mumucat="nselmuons==2&&nvetomuons==2&&nvetoelectrons==0&&m_mumu>60&&m_mumu<120&&"+jetmetdphicut;
   std::string mumuzcat="&&nselmuons==2&&nvetomuons==2&&m_mumu>60&&m_mumu<120&&"+jetmetdphicut;//zmumu
@@ -239,8 +237,8 @@ int main(int argc, char* argv[]){
 
   //std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&dijetmetnomu_ptfraction>0.6";
   //std::string qcdzcat="&&dijetmetnomu_ptfraction>0.6";//QCD
-  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&thrust<-5&&"+jetmetdphicut;
-  std::string qcdzcat="&&thrust<-5";//QCD
+  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&"+jetmetdphicut;
+  std::string qcdzcat="&&"+jetmetdphicut;//QCD
 
   if(channel=="nunu"){//nunu
     sigcat=nunucat;
@@ -274,10 +272,6 @@ int main(int argc, char* argv[]){
     std::cout<<"Error: Channel "<<channel<<" not recognised, exiting"<<std::endl;
     return 1;
   }
-
-
-
-
     
   //DATA SHAPE GENERATION
   DataShape data("data");
@@ -544,7 +538,7 @@ int main(int argc, char* argv[]){
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
 
-  /*
+  
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("VBF-QCD")//VBF-QCD")
     .set_shape(shape)
@@ -565,8 +559,8 @@ int main(int argc, char* argv[]){
   if(channel=="enu"||channel=="munu"||channel=="top"){
     QCD.set_sigmcweight("total_weight_leptight");
   }
-  */
-
+  
+  /*
   //QCD from DATA SHAPE GENERATION
   DataNormShape QCD("QCD");
   QCD.set_sigmcset(dataset)//VBF-QCD")
@@ -585,7 +579,7 @@ int main(int argc, char* argv[]){
     .set_sigcat(qcdcat+dataextrasel)
     .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100")
     .set_contcat(nunucat);
-
+  */
 
   //NORMALISED PLOTS FOR REFEREE
 //   std::vector<std::string> ewksets; //List of sets for ewk
@@ -735,7 +729,7 @@ int main(int argc, char* argv[]){
 
   LTPlotElement qcdele;
   qcdele.set_is_data(false)
-    .set_scale((64903-16011.1)/13016.8)
+    .set_scale(1)
     .set_color(kMagenta-10)
     .set_in_stack(true)
     .set_is_inratioden(true)

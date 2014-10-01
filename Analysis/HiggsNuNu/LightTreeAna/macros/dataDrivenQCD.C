@@ -184,17 +184,26 @@ int dataDrivenQCD() {
   //std::string fileName = "../../output/MC_Powheg-Htoinv-mH125.root";
 
   bool doReweighting = false;
-  std::string type = "DataMC_PARKED";//_rwmindphi";
+  std::string type = "DataMC_PARKED_mindphi1";//_rwmindphi";
   //std::string type = "VBFH125";
   unsigned varIdx = 5;
 
   const unsigned nTrees = 3;
   std::string label[nTrees] = {"j1j2","j1j3","qcd"};
 
+
   TFile *mcFile[nTrees];
-  mcFile[0] = TFile::Open("../output/nunu.root");
-  mcFile[1] = TFile::Open("../output/nunu_J1J3.root");
-  mcFile[2] = TFile::Open("../output/nunu_QCD.root");
+  mcFile[0] = TFile::Open("../output_mindphi_1/nunu.root");
+  mcFile[1] = TFile::Open("../output_mindphi_1/nunu_J1J3.root");
+  mcFile[2] = TFile::Open("../output_mindphi_1/nunu_QCD.root");
+
+  for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
+    if (!mcFile[iT]) {
+      std::cout << " Input file for tree " << label[iT] << " cannot be opened, please check !" << std::endl;
+      return 1;
+    }
+    else std::cout << " input file " << mcFile[iT]->GetName() << " successfully opened" << std::endl;
+  }
 
   TFile *data = TFile::Open(fileName.c_str(), "update");
   if (!data) {
@@ -248,8 +257,15 @@ int dataDrivenQCD() {
   TBranch *brQCDWeight[nTrees];
 
   int nEntries[nTrees];
-  
+
+
   for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
+    if (!tree[iT]) {
+      std::cout << " Cannot opened tree LightTree for " << label[iT] << std::endl;
+      return 1;
+    }
+    else std::cout << " Tree " << label[iT] << " successfully opened." << std::endl;
+
     brDupl[iT] = tree[iT]->Branch("is_dupl", &is_dupl, "is_dupl/I");
     brQCDWeight[iT] = tree[iT]->Branch("qcdW", &qcdW, "qcdW/D");
 
@@ -284,12 +300,13 @@ int dataDrivenQCD() {
       tree[iT]->GetEntry(iE);
       is_dupl = 0;
       bool passtrig = ((run>=190456 && run<=193621 &&passtrigger==1) || (run>=193833 && run<=196531 && passparkedtrigger1==1) ||(run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40;//parked
-      //bool passpT = (iT==0 && jet1_pt > 50) || iT>0;
-      bool passpT = jet1_pt > 50 && jet2_pt > 40;
+      bool passpT = (iT==0 && jet1_pt > 50 && jet2_pt > 40) || 
+	(iT>0 && jet1_pt > 30 && jet2_pt > 30);
+	 //bool passpT = jet1_pt > 50 && jet2_pt > 40;
       bool passnj = (iT==0) || (iT>0 && n_jets_30>2);
       qcdW = qcdWeight(mindphi);
 
-      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && mindphi > 1.5){//pass sel
+      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && mindphi > 1.0){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -469,9 +486,9 @@ int dataDrivenQCD() {
       if (iT>0) selection << "n_jets_30>2 && ";
       selection << "is_dupl==0 && ";
       selection << passtrig <<" && ";
-      //if (iT==0) 
+      if (iT==0) 
 	selection << passpT << " && ";
-	selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && jetmetnomu_mindphi>1.5";
+      selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && jetmetnomu_mindphi>1.0";
       selection << " )";
       if (iT==2 && doReweighting) selection << " * (qcdW)";
       //selection << " * (1)";

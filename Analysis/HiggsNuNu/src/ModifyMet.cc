@@ -4,6 +4,7 @@
 #include "UserCode/ICHiggsTauTau/interface/Met.hh"
 #include "UserCode/ICHiggsTauTau/interface/Muon.hh"
 #include "UserCode/ICHiggsTauTau/interface/Electron.hh"
+#include "UserCode/ICHiggsTauTau/interface/Jet.hh"
 
 
 namespace ic {
@@ -13,11 +14,13 @@ namespace ic {
 		       std::string met_name,
 		       std::string lep_name,
 		       unsigned lepFlavour,
-		       unsigned nLepToAdd) : ModuleBase(name) {
+		       unsigned nLepToAdd,
+		       double mindphi) : ModuleBase(name) {
     met_name_ = met_name;
     lep_name_ = lep_name;
     lepFlavour_ = lepFlavour;
     nLepToAdd_ = nLepToAdd;
+    mindphi_ = mindphi;
   }
  
   ModifyMet::~ModifyMet(){
@@ -34,7 +37,8 @@ namespace ic {
 	      << "---- lepton flavour : " << lepFlavour_ << std::endl
 	      << "---- Number of leptons to add: " << nLepToAdd_ << std::endl
 	      << "---- outputcol name : " << ModuleName() << std::endl;
-   return 0;
+    if (lepFlavour_==4) std::cout << " --- adding extra jets within dphi<" << mindphi_ << " to unmodified MET." << std::endl; 
+    return 0;
   }
 
   int ModifyMet::Execute(TreeEvent *event){
@@ -52,6 +56,8 @@ namespace ic {
       correctMet<Muon>(event,lVec);
     else if (lepFlavour_==1)
       correctMet<Electron>(event,lVec);
+    else if (lepFlavour_==4)
+      correctMet<Jet>(event,lVec);
 
     lMetPtr->set_vector(lVec);
  

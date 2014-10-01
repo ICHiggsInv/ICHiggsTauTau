@@ -16,7 +16,8 @@ namespace ic {
   private:
 
     CLASS_MEMBER(LightTree,fwlite::TFileService*, fs);
-        CLASS_MEMBER(LightTree,std::string, met_label);
+    CLASS_MEMBER(LightTree,std::string, met_label);
+    CLASS_MEMBER(LightTree,std::string, met_nomu_label);
     CLASS_MEMBER(LightTree,std::string, dijet_label);
     CLASS_MEMBER(LightTree,std::string, sel_label);
     CLASS_MEMBER(LightTree,bool, is_data);
@@ -53,6 +54,9 @@ namespace ic {
     double jet2_csv_;
     double jet3_csv_;
     double jet4_csv_;
+    double highest_csv_;
+    double highest_csv_pt_;
+    int highest_csv_rank_;
     int jet1_pdgid_;
     int jet2_pdgid_;
     int jet3_pdgid_;

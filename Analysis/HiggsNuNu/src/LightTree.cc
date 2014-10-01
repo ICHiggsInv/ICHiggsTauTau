@@ -17,6 +17,7 @@ namespace ic {
   LightTree::LightTree(std::string const& name): ModuleBase(name){
     fs_ = NULL;
     met_label_ = "pfMetType1";
+    met_nomu_label_ = "metNoMuons";
     dijet_label_ = "jjCandidates";
     sel_label_ = "JetPair";
     is_data_ = false;
@@ -49,10 +50,13 @@ namespace ic {
     jet2_phi_ = 0;
     jet3_phi_ = 0;
     jet4_phi_ = 0;
-    jet1_csv_ = 0;
-    jet2_csv_ = 0;
-    jet3_csv_ = 0;
-    jet4_csv_ = 0;
+    jet1_csv_ = -1;
+    jet2_csv_ = -1;
+    jet3_csv_ = -1;
+    jet4_csv_ = -1;
+    highest_csv_ = -1;
+    highest_csv_pt_ = 0;
+    highest_csv_rank_ = -1;
     jet1_pdgid_ = 0;
     jet2_pdgid_ = 0;
     jet3_pdgid_ = 0;
@@ -139,6 +143,7 @@ namespace ic {
 	      << "--------------------------------------------- " << std::endl;
     if (fs_) {
       std::cout << "MET Label: " << met_label_ << std::endl;
+      std::cout << "METnoMuons Label: " << met_nomu_label_ << std::endl;
       std::cout << "dijet Label: " << dijet_label_ << std::endl;
       std::cout << "Selection Label: " << sel_label_ << std::endl;
       if (do_qcd_) std::cout << "Processing QCD selection: alternative jet pair." << std::endl;
@@ -175,6 +180,9 @@ namespace ic {
     outputTree_->Branch("jet2_csv",&jet2_csv_);
     outputTree_->Branch("jet3_csv",&jet3_csv_);
     outputTree_->Branch("jet4_csv",&jet4_csv_);
+    outputTree_->Branch("highest_csv",&highest_csv_);
+    outputTree_->Branch("highest_csv_pt",&highest_csv_pt_);
+    outputTree_->Branch("highest_csv_rank",&highest_csv_rank_);
     outputTree_->Branch("jet1_pdgid",&jet1_pdgid_);
     outputTree_->Branch("jet2_pdgid",&jet2_pdgid_);
     outputTree_->Branch("jet3_pdgid",&jet3_pdgid_);
@@ -299,7 +307,7 @@ namespace ic {
     //get collections
     std::vector<CompositeCandidate *> const& dijet_vec = event->GetPtrVec<CompositeCandidate>(dijet_label_);
     Met const* met = event->GetPtr<Met>(met_label_);
-    Met const* metnomuons = event->GetPtr<Met>("metNoMuons");
+    Met const* metnomuons = event->GetPtr<Met>(met_nomu_label_);
     std::vector<Candidate *> const& l1met = event->GetPtrVec<Candidate>("l1extraMET");
     if(l1met.size()!=1)std::cout<<"There seem to be "<<l1met.size()<<" l1mets!!"<<std::endl;
     std::vector<PFJet*> alljets = event->GetPtrVec<PFJet>("AllpfJetsPFlow");
@@ -583,18 +591,31 @@ namespace ic {
       jet2_pdgid_ = 0;
       jet3_pdgid_ = 0;
       jet4_pdgid_ = 0;
+      jet1_csv_ = -1;
+      jet2_csv_ = -1;
+      jet3_csv_ = -1;
+      jet4_csv_ = -1;
+      highest_csv_ = -1;
+      highest_csv_pt_ = 0;
+      highest_csv_rank_ = -1;
       alljetsmetnomu_mindphi_=jetmetnomu_mindphi_;
       alljetsmet_mindphi_=jetmet_mindphi_;
       if (jets.size() >= 2) {
 	for (unsigned i = 0; i < jets.size(); ++i) {
-	  if(jets[i]->id()==jet1->id()){
-	    jet1_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
-	    if(!is_data_) jet1_pdgid_ = jets[i]->parton_flavour();
+	  //find highest csv
+	  double tmpcsv = jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	  if (tmpcsv>highest_csv_) {
+	    highest_csv_ = tmpcsv;
+	    highest_csv_pt_ = jets[i]->pt();
+	    highest_csv_rank_ = jets[i]->id();
+	  }
 
+	  if(jets[i]->id()==jet1->id()){
+	    jet1_csv_=tmpcsv;
+	    if(!is_data_) jet1_pdgid_ = jets[i]->parton_flavour();
 	  }
 	  if(jets[i]->id()==jet2->id()){
-<<<<<<< HEAD
-	    jet2_csv_=jets[i]->GetBDiscriminator("combinedSecondaryVertexBJetTags");
+	    jet2_csv_=tmpcsv;
 	    if(!is_data_) jet2_pdgid_ = jets[i]->parton_flavour();
 	  }
 

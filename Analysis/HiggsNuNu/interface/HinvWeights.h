@@ -45,6 +45,7 @@ class HinvWeights : public ModuleBase {
   CLASS_MEMBER(HinvWeights, double, Alumi)
   CLASS_MEMBER(HinvWeights, double, BClumi)
   CLASS_MEMBER(HinvWeights, double, Dlumi)
+  CLASS_MEMBER(HinvWeights, std::string, dijet_label)
 
   TFile *triggerSF_;
   std::vector<TH1F*> hist_trigSF_METL1vec;
