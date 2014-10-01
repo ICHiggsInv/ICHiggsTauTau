@@ -607,7 +607,7 @@ namespace ic {
 	  if (tmpcsv>highest_csv_) {
 	    highest_csv_ = tmpcsv;
 	    highest_csv_pt_ = jets[i]->pt();
-	    highest_csv_rank_ = jets[i]->id();
+	    highest_csv_rank_ = i;
 	  }
 
 	  if(jets[i]->id()==jet1->id()){

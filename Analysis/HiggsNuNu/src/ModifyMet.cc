@@ -4,7 +4,7 @@
 #include "UserCode/ICHiggsTauTau/interface/Met.hh"
 #include "UserCode/ICHiggsTauTau/interface/Muon.hh"
 #include "UserCode/ICHiggsTauTau/interface/Electron.hh"
-#include "UserCode/ICHiggsTauTau/interface/Jet.hh"
+#include "UserCode/ICHiggsTauTau/interface/PFJet.hh"
 
 
 namespace ic {
@@ -57,7 +57,7 @@ namespace ic {
     else if (lepFlavour_==1)
       correctMet<Electron>(event,lVec);
     else if (lepFlavour_==4)
-      correctMet<Jet>(event,lVec);
+      correctMet<PFJet>(event,lVec);
 
     lMetPtr->set_vector(lVec);
  
