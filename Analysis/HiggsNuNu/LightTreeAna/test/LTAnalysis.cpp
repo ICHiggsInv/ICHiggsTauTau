@@ -537,7 +537,7 @@ int main(int argc, char* argv[]){
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
-
+  
   
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("VBF-QCD")//VBF-QCD")
@@ -560,13 +560,14 @@ int main(int argc, char* argv[]){
     QCD.set_sigmcweight("total_weight_leptight");
   }
   
+  
   /*
   //QCD from DATA SHAPE GENERATION
   DataNormShape QCD("QCD");
-  QCD.set_sigmcset(dataset)//VBF-QCD")
+  QCD.set_sigmcset("DATAQCD")//VBF-QCD")
     .set_shape(shape)
     .set_dirname("qcd")
-    .set_contmcset(dataset)//VBF-QCD")
+    .set_contmcset("DATAQCD")//VBF-QCD")
     .set_contdataset(dataset)
     .set_contbkgset(QCDcontbkgsets)
     .set_contbkgextrafactordir(QCDcontbkgextrafactordir)
@@ -576,6 +577,8 @@ int main(int argc, char* argv[]){
     .set_contdataweight("weight_nolep")
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
+    .set_contmcextrasel(dataextrasel)
+    .set_contbkgextrasel("")
     .set_sigcat(qcdcat+dataextrasel)
     .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100")
     .set_contcat(nunucat);
