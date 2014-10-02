@@ -688,7 +688,7 @@ int main(int argc, char* argv[]){
     .set_input_label("selQCDJets").set_predicate(bind(MinPtMaxEta, _1, 30, 4.7));
 
 
-  double mindphi=1.0;
+  double mindphi=0.5;
   ModifyMet metNoJets = ModifyMet("metNoJets","metNoMuons","selQCDJets",4,100,mindphi);
 
   // ------------------------------------------------------------------------------------

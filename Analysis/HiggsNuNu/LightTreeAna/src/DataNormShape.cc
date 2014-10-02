@@ -66,7 +66,7 @@ namespace ic{
     bool firstbkg=true;
     //IF NO DIRS TO GET DATA DRIVEN WEIGHTS, GET SETS SHAPE
     if(contbkgextrafactordir_.size()==0){
-      contbkgshape= filemanager->GetSetsShape(contbkgset_,"jet2_pt(200,0.,1000.)",basesel_,contcat_,(contmcweight_+contbkgextrasel_),false);
+      contbkgshape= filemanager->GetSetsShape(contbkgset_,"jet2_pt(200,0.,1000.)",basesel_,(contcat_+contbkgextrasel_),contmcweight_,false);
     }
     //WEIGHT INDIVIDUAL SHAPES BY DATA DRIVEN WEIGHTS
     else{
@@ -104,9 +104,9 @@ namespace ic{
 	      //GET Z SHAPE AND WEIGHT IT
 	      nextbkg=filemanager->GetSetShape(contbkgset_[iBkg],"jet2_pt(200,0.,1000.)",basesel_,zcontcat_,"weight_nolep*"+boost::lexical_cast<std::string>(extrafactor),false);
 	    }
-	    else nextbkg=filemanager->GetSetShape(contbkgset_[iBkg],"jet2_pt(200,0.,1000.)",basesel_,contcat_,contmcweight_+"*"+boost::lexical_cast<std::string>(extrafactor),false);
+	    else nextbkg=filemanager->GetSetShape(contbkgset_[iBkg],"jet2_pt(200,0.,1000.)",basesel_,(contcat_+contbkgextrasel_),contmcweight_+"*"+boost::lexical_cast<std::string>(extrafactor),false);
 	  }
-	  else nextbkg=filemanager->GetSetShape(contbkgset_[iBkg],"jet2_pt(200,0.,1000.)",basesel_,contcat_,contmcweight_+"*"+boost::lexical_cast<std::string>(extrafactor),false);
+	  else nextbkg=filemanager->GetSetShape(contbkgset_[iBkg],"jet2_pt(200,0.,1000.)",basesel_,(contcat_+contbkgextrasel_),contmcweight_+"*"+boost::lexical_cast<std::string>(extrafactor),false);
 	  
 	  //ADD HISTOGRAMS TOGETHER
 	  if(firstbkg){

@@ -211,8 +211,8 @@ int main(int argc, char* argv[]){
   }
   */
 
-  std::string dataset="SPLITPARKEDPLUSA";
-  //std::string dataset="PARKEDPLUSA";
+  //std::string dataset="SPLITPARKEDPLUSA";
+  std::string dataset="PARKEDPLUSA";
 
   std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
   std::string sigcat;
@@ -236,8 +236,8 @@ int main(int argc, char* argv[]){
   std::string topcat="nvetomuons==1&&nvetoelectrons==1&&nselmuons==1&&nselelectrons";
   std::string topzcat="&&nvetomuons==1&&nvetoelectrons==1&&nselmuons==1&&nselelectrons";//top
 
-  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&"+jetmetdphicut;
-  std::string qcdzcat="&&"+jetmetdphicut;//QCD
+  std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&alljetsmet_mindphi<1.0 && jetmetnomu_mindphi>1.0";
+  std::string qcdzcat="&&alljetsmet_mindphi<1.0 && jetmetnomu_mindphi>1.0";//QCD
 
   if(channel=="nunu"){//nunu
     sigcat=nunucat;
@@ -561,6 +561,7 @@ int main(int argc, char* argv[]){
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
 
+  /*
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("VBF-QCD")//VBF-QCD")
     .set_shape(shape)
@@ -576,14 +577,14 @@ int main(int argc, char* argv[]){
     .set_basesel(analysis->baseselection())
     .set_contdataextrasel(dataextrasel)
     .set_sigcat(sigcat)
-    .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100"+qcdzcat)
+    .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100"+nunuzcat)
     .set_contcat(qcdcat);
   if(channel=="enu"||channel=="munu"||channel=="top"){
     QCD.set_sigmcweight("total_weight_leptight");
   }
+  */
   
   
-  /*
   //QCD from DATA SHAPE GENERATION
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("DATAQCD")//VBF-QCD")
@@ -595,16 +596,16 @@ int main(int argc, char* argv[]){
     .set_contbkgextrafactordir(QCDcontbkgextrafactordir)
     .set_contbkgisz(QCDcontbkgisz)
     .set_sigmcweight("weight_nolep")
-    .set_contmcweight("weight_nolep")
+    .set_contmcweight("total_weight_lepveto")
     .set_contdataweight("weight_nolep")
     .set_basesel(analysis->baseselection())
-    .set_contdataextrasel(dataextrasel)
-    .set_contmcextrasel(dataextrasel)
-    .set_contbkgextrasel("")
+    .set_contdataextrasel("&&"+jetmetdphicut+dataextrasel)
+    .set_contmcextrasel("&&"+qcdcat+dataextrasel)
+    .set_contbkgextrasel("&&"+jetmetdphicut)
     .set_sigcat(qcdcat+dataextrasel)
-    .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100")
-    .set_contcat(nunucat);
-  */
+    .set_zcontcat("m_mumu_gen>80&&m_mumu_gen<100"+nunuzcat)
+    .set_contcat("nvetomuons==0&&nvetoelectrons==0");
+
 
   //NORMALISED PLOTS FOR REFEREE
 //   std::vector<std::string> ewksets; //List of sets for ewk
@@ -813,7 +814,7 @@ int main(int argc, char* argv[]){
   elementvec.push_back(wtaunuele);
   //  elementvec.push_back(zmumuele);
   elementvec.push_back(znunuele);
-  elementvec.push_back(qcdele);
+  if(channel=="nunu" || channel=="qcd") elementvec.push_back(qcdele);
   elementvec.push_back(vvele);
   elementvec.push_back(wgele);
   elementvec.push_back(topele);
@@ -825,7 +826,9 @@ int main(int argc, char* argv[]){
     .set_do_ratio(true)
     .set_elements(elementvec)
     //.set_histTitles(histTitle)
-    .set_shapes(shapevec);
+    .set_shapes(shapevec)
+    .set_add_underflows(true)
+    .set_add_overflows(true);
   if(channel=="nunu"&&runblind)plotter.set_do_ratio(false);
 
   std::vector<std::string> dirvec;
@@ -833,7 +836,7 @@ int main(int argc, char* argv[]){
   dirvec.push_back("wmu");
   dirvec.push_back("wtau");
   dirvec.push_back("zvv");
-  dirvec.push_back("qcd");
+  if(channel=="nunu" || channel=="qcd") dirvec.push_back("qcd");
   dirvec.push_back("vv");
   dirvec.push_back("wg");  
   dirvec.push_back("top");
@@ -862,7 +865,7 @@ int main(int argc, char* argv[]){
     analysis->AddModule(&zmumu);
   }
   else analysis->AddModule(&zmumuinzcont);
-  analysis->AddModule(&QCD);
+  if(channel=="nunu" || channel=="qcd") analysis->AddModule(&QCD);
   //analysis->AddModule(&wmunuraw);
   //analysis->AddModule(&wenuraw);
   //analysis->AddModule(&wtaunuraw);  
