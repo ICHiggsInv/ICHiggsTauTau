@@ -211,8 +211,9 @@ int main(int argc, char* argv[]){
   }
   */
 
-  //  std::string dataset="SPLITPARKEDPLUSA";
-  std::string dataset="PARKEDPLUSA";
+  std::string dataset="SPLITPARKEDPLUSA";
+  //std::string dataset="PARKEDPLUSA";
+
   std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
   std::string sigcat;
   std::string zextrasigcat;
@@ -233,10 +234,8 @@ int main(int argc, char* argv[]){
   std::string taunuzcat="&&ntaus==1&&nvetoelectrons==0&&"+jetmetdphicut;//wtau
 
   std::string topcat="nvetomuons==1&&nvetoelectrons==1&&nselmuons==1&&nselelectrons";
-  std::string topzcat="&&nvetomuons==1&&nvetoelectrons==1&&nselmuons==1&&nselelectrons";//wtau
+  std::string topzcat="&&nvetomuons==1&&nvetoelectrons==1&&nselmuons==1&&nselelectrons";//top
 
-  //std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&dijetmetnomu_ptfraction>0.6";
-  //std::string qcdzcat="&&dijetmetnomu_ptfraction>0.6";//QCD
   std::string qcdcat="nvetoelectrons==0&&nvetomuons==0&&"+jetmetdphicut;
   std::string qcdzcat="&&"+jetmetdphicut;//QCD
 
@@ -281,24 +280,40 @@ int main(int argc, char* argv[]){
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat+dataextrasel);
 
+  std::string sigmcweight;
+  if(channel=="nunu"||channel=="qcd") sigmcweight="total_weight_lepveto";
+  else sigmcweight="total_weight_leptight";
+
   DataShape signal("signal");
   signal.set_dataset("sig125")
     .set_dirname("qqH")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
+    .set_basesel(analysis->baseselection())
+    .set_cat(sigcat);  
+
+  DataShape ggHsignal("ggHsignal");
+  ggHsignal.set_dataset("ggH125")
+    .set_dirname("ggH")
+    .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
+
 
   DataShape vv("vv");
   vv.set_dataset("VV")
     .set_dirname("vv")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
   DataShape topraw("topraw");
   topraw.set_dataset("Top")
     .set_dirname("top")
-    .set_shape(shape)
+    .set_shape(shape)    
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -306,6 +321,7 @@ int main(int argc, char* argv[]){
   wgamma.set_dataset("WGamma")
     .set_dirname("wg")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -313,6 +329,7 @@ int main(int argc, char* argv[]){
   znunuraw.set_dataset("ZJets_nunu")
     .set_dirname("zvv")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -320,13 +337,16 @@ int main(int argc, char* argv[]){
   zmumuraw.set_dataset("ZJets_ll_all")
     .set_dirname("zmumu")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
+
   
   DataShape wmunuraw("wmunuraw");
   wmunuraw.set_dataset("WJets_munu")
     .set_dirname("wmuraw")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -334,6 +354,7 @@ int main(int argc, char* argv[]){
   wenuraw.set_dataset("WJets_enu")
     .set_dirname("welraw")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -341,6 +362,7 @@ int main(int argc, char* argv[]){
   wtaunuraw.set_dataset("WJets_taunu")
     .set_dirname("wtauraw")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -348,6 +370,7 @@ int main(int argc, char* argv[]){
   QCDraw.set_dataset("VBF-QCD")
     .set_dirname("qcdraw")
     .set_shape(shape)
+    .set_dataweight(sigmcweight)
     .set_basesel(analysis->baseselection())
     .set_cat(sigcat);
 
@@ -506,26 +529,26 @@ int main(int argc, char* argv[]){
   QCDcontbkgsets.push_back("VV");
   QCDcontbkgsets.push_back("Top");
   QCDcontbkgsets.push_back("WGamma");
-  QCDcontbkgsets.push_back("ZJets_ll");
-  QCDcontbkgsets.push_back("ZJets_ll_vbf");
+   QCDcontbkgsets.push_back("ZJets_ll");
+   QCDcontbkgsets.push_back("ZJets_ll_vbf");
   QCDcontbkgsets.push_back("WJets_enu");
   QCDcontbkgsets.push_back("WJets_munu");
   QCDcontbkgsets.push_back("WJets_taunu");
 
   std::vector<std::string> QCDcontbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
-  QCDcontbkgextrafactordir.push_back("");
-  QCDcontbkgextrafactordir.push_back("top");
-  QCDcontbkgextrafactordir.push_back("");
-  QCDcontbkgextrafactordir.push_back("zvv");
-  QCDcontbkgextrafactordir.push_back("zvv");
-  QCDcontbkgextrafactordir.push_back("wel");
-  QCDcontbkgextrafactordir.push_back("wmu");
-  QCDcontbkgextrafactordir.push_back("wtau");
+    QCDcontbkgextrafactordir.push_back("");
+    QCDcontbkgextrafactordir.push_back("top");
+    QCDcontbkgextrafactordir.push_back("");
+   QCDcontbkgextrafactordir.push_back("zvv");
+   QCDcontbkgextrafactordir.push_back("zvv");
+    QCDcontbkgextrafactordir.push_back("wel");
+    QCDcontbkgextrafactordir.push_back("wmu");
+    QCDcontbkgextrafactordir.push_back("wtau");
   
   std::vector<int> QCDcontbkgisz;
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
-  QCDcontbkgisz.push_back(0);
+   QCDcontbkgisz.push_back(0);
   if(channel!="mumu"){
     QCDcontbkgisz.push_back(2);
     QCDcontbkgisz.push_back(1);
@@ -537,8 +560,7 @@ int main(int argc, char* argv[]){
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
-  
-  
+
   DataNormShape QCD("QCD");
   QCD.set_sigmcset("VBF-QCD")//VBF-QCD")
     .set_shape(shape)
@@ -777,6 +799,14 @@ int main(int argc, char* argv[]){
     .set_legname(legname.str())
     .set_sample("qqH");
 
+  LTPlotElement ggHele;
+  ggHele.set_is_data(false)
+    .set_scale(20)
+    .set_color(kBlue)
+    .set_in_stack(false)
+    .set_legname("ggHx20")
+    .set_sample("ggH");
+
   if(!(channel=="nunu"&&runblind))elementvec.push_back(dataele);
   elementvec.push_back(wmunuele);
   elementvec.push_back(wenuele);
@@ -788,6 +818,7 @@ int main(int argc, char* argv[]){
   elementvec.push_back(wgele);
   elementvec.push_back(topele);
   elementvec.push_back(sigele);
+  elementvec.push_back(ggHele);
 
   HistPlotter plotter("plotter");
   plotter.set_dirname("ControlPlots")
@@ -843,6 +874,7 @@ int main(int argc, char* argv[]){
   //analysis->AddModule(&topraw);
   if(!(channel=="nunu"&&runblind))analysis->AddModule(&data);
   analysis->AddModule(&signal);
+  analysis->AddModule(&ggHsignal);
   analysis->AddModule(&plotter);
   analysis->AddModule(&summary);
 
