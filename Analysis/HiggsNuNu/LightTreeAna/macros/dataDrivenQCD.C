@@ -184,7 +184,7 @@ int dataDrivenQCD() {
   //std::string fileName = "../../output/MC_Powheg-Htoinv-mH125.root";
 
   bool doReweighting = false;
-  std::string type = "DataMC_PARKED_mindphi1";//_rwmindphi";
+  std::string type = "DataMC_PARKED";//_rwmindphi";
   //std::string type = "VBFH125";
   unsigned varIdx = 5;
 
@@ -193,9 +193,11 @@ int dataDrivenQCD() {
 
 
   TFile *mcFile[nTrees];
-  mcFile[0] = TFile::Open("../output_mindphi_1/nunu.root");
+  //mcFile[0] = TFile::Open("../output_allmindphi_1/nunu.root");
+  mcFile[0] = TFile::Open("../output_dataqcd_0/nunu.root");
   mcFile[1] = TFile::Open("../output_mindphi_1/nunu_J1J3.root");
-  mcFile[2] = TFile::Open("../output_mindphi_1/nunu_QCD.root");
+  //mcFile[2] = TFile::Open("../output_mindphi_1/nunu_QCD.root");
+  mcFile[2] = TFile::Open("../output_mindphi_1_allmindphi_0_1/nunu.root");
 
   for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
     if (!mcFile[iT]) {
@@ -217,7 +219,7 @@ int dataDrivenQCD() {
   TTree *tree[nTrees];
   tree[0] = (TTree*)gDirectory->Get("LightTree");
   tree[1] = (TTree*)gDirectory->Get("LightTreeJ1J3");
-  tree[2] = (TTree*)gDirectory->Get("LightTreeQCD");
+  tree[2] = (TTree*)gDirectory->Get("LightTree");
 
   unsigned run;
   unsigned lumi;
@@ -236,6 +238,7 @@ int dataDrivenQCD() {
   double jet1_eta;
   double jet2_eta;
   double metnomuons;
+  double metnomu_significance;
   int nvetomuons;
   int nselmuons;
   int nvetoelectrons;
@@ -286,6 +289,7 @@ int dataDrivenQCD() {
     tree[iT]->SetBranchAddress("alljetsmetnomu_mindphi",&allmindphi);
     tree[iT]->SetBranchAddress("jet1_eta",&jet1_eta);
     tree[iT]->SetBranchAddress("jet2_eta",&jet2_eta);
+    tree[iT]->SetBranchAddress("metnomu_significance",&metnomu_significance);
     tree[iT]->SetBranchAddress("metnomuons",&metnomuons);
     tree[iT]->SetBranchAddress("nvetomuons",&nvetomuons);
     tree[iT]->SetBranchAddress("nselmuons",&nselmuons);
@@ -300,13 +304,15 @@ int dataDrivenQCD() {
       tree[iT]->GetEntry(iE);
       is_dupl = 0;
       bool passtrig = ((run>=190456 && run<=193621 &&passtrigger==1) || (run>=193833 && run<=196531 && passparkedtrigger1==1) ||(run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40;//parked
-      bool passpT = (iT==0 && jet1_pt > 50 && jet2_pt > 40) || 
-	(iT>0 && jet1_pt > 30 && jet2_pt > 30);
+      bool passpT = (iT!=1 && jet1_pt > 50 && jet2_pt > 40) || 
+	(iT==1 && jet1_pt > 30 && jet2_pt > 30);
 	 //bool passpT = jet1_pt > 50 && jet2_pt > 40;
-      bool passnj = (iT==0) || (iT>0 && n_jets_30>2);
+      bool passnj = (iT!=1) || (iT==1 && n_jets_30>2);
       qcdW = qcdWeight(mindphi);
 
-      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && mindphi > 1.0){//pass sel
+      bool passdphi = (iT==0 && allmindphi>1) || (iT==1 && mindphi>1) || (iT==2 && mindphi>1 && allmindphi<1);
+
+      if (passtrig && passpT && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && metnomuons>90 && metnomu_significance>3 && nvetomuons==0 && nvetoelectrons==0 && passdphi){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -483,12 +489,15 @@ int dataDrivenQCD() {
       std::string passpT = "(jet1_pt > 50 && jet2_pt > 40)";
 
       selection << "( ";
-      if (iT>0) selection << "n_jets_30>2 && ";
+      if (iT==1) selection << "n_jets_30>2 && ";
       selection << "is_dupl==0 && ";
       selection << passtrig <<" && ";
-      if (iT==0) 
+      if (iT!=1) 
 	selection << passpT << " && ";
-      selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0 && jetmetnomu_mindphi>1.0";
+      selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && metnomuons>90 && metnomu_significance>3 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
+      if (iT==0) selection << " && alljetsmetnomu_mindphi>1.0";
+      else if (iT==1) selection << " && jetmetnomu_mindphi>1.0";
+      else selection << " && jetmetnomu_mindphi>1.0 && alljetsmetnomu_mindphi<1.0";
       selection << " )";
       if (iT==2 && doReweighting) selection << " * (qcdW)";
       //selection << " * (1)";

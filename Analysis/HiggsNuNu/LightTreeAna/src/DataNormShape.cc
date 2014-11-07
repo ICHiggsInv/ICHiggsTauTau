@@ -159,6 +159,7 @@ namespace ic{
 	histname=shapename_[iShape];
       }
       sigmcshape.SetName(histname.c_str());
+      if(iShape==0) std::cout << " Raw NSMC: " << Integral(&sigmcshape) << "+-" << Error(&sigmcshape) << std::endl;
       sigmcshape.Scale(weight*sigcontextrafactor_);
       double nsmc=Integral(&sigmcshape);
       double nsmcerr=Error(&sigmcshape);

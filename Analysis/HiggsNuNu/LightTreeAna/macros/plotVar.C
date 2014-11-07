@@ -61,20 +61,25 @@ double deltaPhi(double jeta_phi, double jetb_phi){
 
 int plotVar() {
 
+  const unsigned nTrees = 1;
+
   //std::string fileName = "../../output_lighttree/Wjets_enu.root";
-  std::string fileName = "../../output_lighttree/VBFPARKED.root";
-  //std::string fileName = "../../output_lighttree/VBFQCD.root";
+  std::string fileName[nTrees];
+  //fileName[0] = "../../output_lighttree/VBFPARKED.root";
+  //fileName[1] = "../../output_lighttree/QCDPARKED.root";
+  //fileName[2] = "../../output_lighttree/QCDPARKED_0d5.root";
+  fileName[0] = "../../output_lighttree/VBFQCD.root";
   //std::string fileName = "../../output_lighttree/MC_Powheg-Htoinv-mH125.root";
 
   //std::string type = "Wjets_enu";
-  std::string type = "VBFPARKED";
-  //std::string type = "VBFQCD";
+  //std::string type = "VBFPARKED";
+  std::string type = "VBFQCD";
   //std::string type = "VBFH125";
 
-  //bool isMC = true;
-  bool isMC = false;
+  bool isMC = true;
+  //bool isMC = false;
 
-  TFile *data = TFile::Open(fileName.c_str(), "update");
+  /*TFile *data = TFile::Open(fileName.c_str(), "update");
   if (!data) {
     std::cout << " Input file " << fileName << " not found. Exiting..." << std::endl;
     return 1;
@@ -83,13 +88,29 @@ int plotVar() {
   data->cd();
 
   const unsigned nTrees = 3;
-  std::string label[nTrees] = {"j1j2","j1j3","qcd"};
-
   TTree *tree[nTrees];
   tree[0] = (TTree*)gDirectory->Get("LightTree");
   tree[1] = (TTree*)gDirectory->Get("LightTreeJ1J3");
   tree[2] = (TTree*)gDirectory->Get("LightTreeQCD");
 
+  */
+  std::string label[nTrees] = {"VBF-QCD"};//data","qcd_1","qcd_0.5"};
+  TFile *data[nTrees];
+  TTree *tree[nTrees];
+
+  for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
+    int is_dupl = 0;
+    data[iT] = TFile::Open(fileName[iT].c_str(), "update");
+    if (!data[iT]) {
+      std::cout << " Input file " << fileName[iT] << " not found. Exiting..." << std::endl;
+      return 1;
+    }
+    
+    data[iT]->cd();
+    tree[iT] = (TTree*)gDirectory->Get("LightTree");
+  }
+
+  
   unsigned run;
   unsigned lumi;
   unsigned event;
@@ -98,9 +119,11 @@ int plotVar() {
   double passparkedtrigger2;
   double l1met;
   double jet1_pt;
+  double jet2_pt;
   double jet3_pt;
-  unsigned n_jets;
   double dijet_M;
+  double mindphi;
+  double allmindphi;
   double jet1_eta;
   double jet2_eta;
   double jet3_eta;
@@ -110,6 +133,8 @@ int plotVar() {
   double metnomuons;
   double metnomu_x;
   double metnomu_y;
+  unsigned n_jets_30;
+  unsigned n_jets_15;
   int nvetomuons;
   int nselmuons;
   int nvetoelectrons;
@@ -118,6 +143,7 @@ int plotVar() {
   float dRjbjc;
   float dphiMETjc;
 
+  /*
   std::set<Event> evtSet;
   std::pair<std::set<Event>::iterator,bool> isInserted;
   unsigned duplicateJ1J2 = 0;
@@ -126,12 +152,22 @@ int plotVar() {
   unsigned passJ1J2 = 0;
   unsigned passJ1J3 = 0;
   unsigned passJ2J3 = 0;
-  
+  */
   int nEntries[nTrees];
   
   for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
     int is_dupl = 0;
-    TBranch *brDupl = tree[iT]->Branch("is_dupl", &is_dupl, "is_dupl/I");
+    data[iT] = TFile::Open(fileName[iT].c_str(), "update");
+    if (!data[iT]) {
+      std::cout << " Input file " << fileName[iT] << " not found. Exiting..." << std::endl;
+      return 1;
+    }
+    
+    data[iT]->cd();
+    tree[iT] = (TTree*)gDirectory->Get("LightTree");
+
+    
+    //TBranch *brDupl = tree[iT]->Branch("is_dupl", &is_dupl, "is_dupl/I");
     TBranch *brdRjajc = tree[iT]->Branch("dRjajc", &dRjajc, "dRjajc/F");
     TBranch *brdRjbjc = tree[iT]->Branch("dRjbjc", &dRjbjc, "dRjbjc/F");
     TBranch *brdphiMETjc = tree[iT]->Branch("dphiMETjc", &dphiMETjc, "dphiMETjc/F");
@@ -146,8 +182,12 @@ int plotVar() {
     tree[iT]->SetBranchAddress("passparkedtrigger2",&passparkedtrigger2);
     tree[iT]->SetBranchAddress("l1met",&l1met);
     tree[iT]->SetBranchAddress("jet1_pt",&jet1_pt);
+    tree[iT]->SetBranchAddress("jet2_pt",&jet2_pt);
     tree[iT]->SetBranchAddress("jet3_pt",&jet3_pt);
-    tree[iT]->SetBranchAddress("n_jets_30",&n_jets);
+    tree[iT]->SetBranchAddress("n_jets_30",&n_jets_30);
+    tree[iT]->SetBranchAddress("n_jets_15",&n_jets_15);
+    tree[iT]->SetBranchAddress("jetmetnomu_mindphi",&mindphi);
+    tree[iT]->SetBranchAddress("alljetsmetnomu_mindphi",&allmindphi);
     tree[iT]->SetBranchAddress("metnomu_x",&metnomu_x);
     tree[iT]->SetBranchAddress("metnomu_y",&metnomu_y);
     tree[iT]->SetBranchAddress("dijet_M",&dijet_M);
@@ -165,15 +205,15 @@ int plotVar() {
 
     std::cout << " Jet pair " << label[iT] << " has " << nEntries[iT] << " entries in tree." << std::endl;
     
-    std::cout << " Dupl set size: " << evtSet.size() << std::endl;
+    //std::cout << " Dupl set size: " << evtSet.size() << std::endl;
 
     for (int iE(0); iE<nEntries[iT]; ++iE){//loop on entries
       tree[iT]->GetEntry(iE);
-      is_dupl = 0;
+      //is_dupl = 0;
       dRjajc = -1;
       dRjbjc = -1;
       dphiMETjc = -1;
-      if (n_jets>2) {
+      if (n_jets_30>2) {
 	double deta = jet1_eta-jet3_eta;
 	double dphi = deltaPhi(jet1_phi,jet3_phi); 
 	dRjajc = sqrt(pow(deta,2)+pow(dphi,2));
@@ -183,13 +223,15 @@ int plotVar() {
 	
 	dphiMETjc = deltaPhi(jet3_phi,atan(metnomu_y/metnomu_x));
       }
-
+      /*
       //bool passtrig = (!isMC && passtrigger==1 && l1met>40) || isMC;//MET data
       bool passtrig = (!isMC && ((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1)) && l1met>40) || isMC;//parked
 
-      bool passnj = (iT==0) || (iT>0 && n_jets>2);
+      bool passnj = true;//(iT==0) || (iT>0 && n_jets>2);
 
-      if (passtrig && passnj && jet1_eta*jet2_eta < 0 && dijet_M>=800 && (jet1_pt > 50) && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0){//pass sel
+      bool passdphi = mindphi>1 && allmindphi<1;
+
+      if (passtrig && passnj && passdphi && jet1_eta*jet2_eta < 0 && dijet_M>=800 && jet1_pt > 50 && jet2_pt > 40  && metnomuons>90 && nvetomuons==0 && nvetoelectrons==0){//pass sel
 	Event lEvt;
 	lEvt.run = run;
 	lEvt.event = event;
@@ -214,24 +256,28 @@ int plotVar() {
 	  else 
 	    passJ2J3++;
 	}
+      
       }//pass sel
-      brDupl->Fill();
+      */
+      //brDupl->Fill();
       brdRjajc->Fill();
       brdRjbjc->Fill();
       brdphiMETjc->Fill();
     }//loop on entries
 
-    std::cout << " Dupl set size after: " << evtSet.size() << std::endl;
+    //std::cout << " Dupl set size after: " << evtSet.size() << std::endl;
   
   }//loop on trees
 
+  /*
   std::cout << " Duplicated/passing events: " << std::endl
 	    << label[0] << " & " << duplicateJ1J2+passJ1J2 << " & " << duplicateJ1J2 << " & " << passJ1J2 << "\\\\" << std::endl
 	    << label[1] << " & " << duplicateJ1J3+passJ1J3 << " & " << duplicateJ1J3 << " & " << passJ1J3 << "\\\\"<< std::endl
 	    << label[2] << " & " << duplicateJ2J3+passJ2J3 << " & " << duplicateJ2J3 << " & " << passJ2J3 << "\\\\"<< std::endl
     ;
+    */
 
-  const unsigned nVars = 25;
+  const unsigned nVars = 26;
   std::string vars[nVars] = {
     "dijet_M",
     "metnomuons",	     
@@ -239,6 +285,7 @@ int plotVar() {
     "dijet_dphi",
     "metnomu_significance",
     "jetmetnomu_mindphi",
+    "alljetsmetnomu_mindphi",
     "jet1_pt",
     "jet2_pt",
     "jet3_pt",
@@ -266,6 +313,7 @@ int plotVar() {
     ";#Delta#eta_{jj}",
     ";#Delta#phi_{jj}",
     ";METnoMu/#sigma(METnoMu)",
+    ";min #Delta#phi(j_{1,2},METnoMu)",
     ";min #Delta#phi(j,METnoMu)",
     ";p_{T}^{ja} (GeV)",
     ";p_{T}^{jb} (GeV)",
@@ -288,24 +336,30 @@ int plotVar() {
     ";#Delta#phi(jc,METnoMu)"
   };
 
-  unsigned nbins[nVars] = {75,100,44,30,35,30,50,50,50,50,50,50,50,50,100,50,50,10,34,34,34,34,50,50,50};
-  float min[nVars] = {0,0,3.6,0,3,1.5,30,30,30,30,0,0,0,0,0,0,0,0,-12,-12,-12,-12,0,0,0};
-  float max[nVars] = {3000,500,8,3.1416,10,3.1416,300,300,300,300,1,1,1,1,1000,400,1,10,22,22,22,22,10,10,3.1416};  
+unsigned nbins[nVars] = {75,100,44,30,35,30,30,50,50,50,50,50,50,50,50,100,50,50,10,34,34,34,34,50,50,50};
+float min[nVars] = {0,0,3.6,0,3,0,0,30,30,15,15,0,0,0,0,0,0,0,0,-12,-12,-12,-12,0,0,0};
+float max[nVars] = {3000,500,8,3.1416,10,3.1416,3.1416,300,300,300,300,1,1,1,1,1000,400,1,10,22,22,22,22,10,10,3.1416};  
 
   TH1F *hist[nVars][nTrees];
   //TH1F *histsum[nVars];
 
   std::ostringstream lname;
   TCanvas *myc[nVars+4];
-  for (unsigned iV(0); iV<nVars+4; ++iV){//loop on variables
+  /*for (unsigned iV(0); iV<nVars+4; ++iV){//loop on variables
     lname.str("");
     if (iV<nVars) lname << "myc_" << vars[iV];
     else lname << "myc_" << iV-nVars;
     myc[iV] = new TCanvas(lname.str().c_str(),
 			  lname.str().c_str(),
 			  1000,1000);
-  }
+			  }*/
+
   for (unsigned iV(0); iV<nVars; ++iV){//loop on variables
+    lname.str("");
+    lname << "myc_" << vars[iV];
+    myc[iV] = new TCanvas(lname.str().c_str(),
+			  lname.str().c_str(),
+			  1000,1000);
     myc[iV]->cd();
     for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
       
@@ -315,10 +369,14 @@ int plotVar() {
       //bool passtrig = (!isMC && passtrigger==1 && l1met>40) || isMC;//MET data
       std::string passtrig = "((run>=190456 && run<=193621 && passtrigger==1) || (run>=193833 && run<=196531 &&passparkedtrigger1==1) || (run>=203777 && run<=208686 && passparkedtrigger2==1)) && l1met>40";
 
-      if (iT>0) selection << " n_jets_30>2 && ";
-      selection << "is_dupl==0 && ";
+      //std::string signal = "metnomuons<130 && alljetsmetnomu_mindphi>1.0 && alljetsmetnomu_mindphi<2.0 && metnomu_significance < 4 && dijet_dphi > 1.5";
+      std::string signal = "jetmetnomu_mindphi>1.5 && metnomu_significance > 3";
+      if (iT==0) selection << signal << " && " ;
+      //if (iT>0) selection << " n_jets_30>2 && ";
+      //selection << "is_dupl==0 && ";
       if (!isMC) selection << passtrig <<" && ";
-      selection << "jet1_eta*jet2_eta<0 && dijet_M>=800 && (jet1_pt>50) && metnomuons>90 && nvetomuons==0 && nselmuons==0 && nvetoelectrons==0 && nselelectrons==0";
+      selection << "jet1_eta*jet2_eta<0 && dijet_deta>3.6 && jet1_pt>50 && jet2_pt>40 && metnomuons>90 && dijet_M > 800 && nvetomuons==0 && nvetoelectrons==0";
+      //if (iT>0) selection << " && alljetsmet_mindphi<1.0 && jetmetnomu_mindphi>1.";
       
       lname.str("");
       lname << "p_" << vars[iV] << "_" << label[iT];
@@ -328,11 +386,12 @@ int plotVar() {
       lname << vars[iV] << ">>p_" << vars[iV] << "_" << label[iT];
       tree[iT]->Draw(lname.str().c_str(),selection.str().c_str(),"");
 
-      hist[iV][iT]->SetLineColor(iT+1);
-      if (iT==0) {
-	hist[iV][iT]->SetMarkerColor(iT+1);
-	hist[iV][iT]->SetMarkerStyle(2);
-      }
+      hist[iV][iT]->SetLineColor(6);//iT+1);
+      hist[iV][iT]->SetFillColor(6);//iT+1);
+      //if (iT==0) {
+      //hist[iV][iT]->SetMarkerColor(iT+1);
+      //hist[iV][iT]->SetMarkerStyle(2);
+      //}
     }//loop on trees
     
     //histsum[iV] = (TH1F*)hist[iV][1]->Clone("histsum");
@@ -348,8 +407,8 @@ int plotVar() {
 
     double lmaxY = 0;
     for (unsigned iT(0); iT<nTrees; ++iT){
-      hist[iV][iT]->GetYaxis()->SetTitle("arb. unit");
-      hist[iV][iT]->Scale(1./hist[iV][iT]->Integral());
+      hist[iV][iT]->GetYaxis()->SetTitle("Events");//arb. unit");
+      //hist[iV][iT]->Scale(1./hist[iV][iT]->Integral());
       if (hist[iV][iT]->GetMaximum() > lmaxY) lmaxY =hist[iV][iT]->GetMaximum();
     }
     //histsum[iV]->Scale(1./histsum[iV]->Integral());
@@ -359,12 +418,13 @@ int plotVar() {
     leg->SetFillColor(10);
     for (unsigned iT(0); iT<nTrees; ++iT){//loop on trees
       hist[iV][iT]->SetMaximum(lmaxY*1.1);
-      hist[iV][iT]->Draw(iT==0?"PE":"histsame");
+      //hist[iV][iT]->Draw(iT==0?"PE":"histsame");
+      hist[iV][iT]->Draw("hist");
       leg->AddEntry(hist[iV][iT],label[iT].c_str(),"L");
     }
     //histsum[iV]->Draw("histsame");
     //leg->AddEntry(histsum[iV],"j1j3+j2j3","F");
-    leg->Draw("same");
+    //leg->Draw("same");
 
     myc[iV]->Update();
 
@@ -375,7 +435,7 @@ int plotVar() {
 
   }//loop on vars
 
-
+  /*
   myc[nVars]->cd();
   hist[6][0]->SetMaximum(hist[6][0]->GetMaximum()*1.1);
   hist[6][0]->Draw("PE");
@@ -427,7 +487,7 @@ int plotVar() {
   lname.str("");
   lname << "PLOTS/" << type << "_pTfourth.pdf";
   myc[nVars+3]->Print(lname.str().c_str());
-
+  */
     
 
 
