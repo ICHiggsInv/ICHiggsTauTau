@@ -1,0 +1,47 @@
+#for all: quickly check that the agreement in all control regions is OK.
+
+#Plots needed for the AN:
+
+ - fig:mcqcd_datamc1 and fig:mcqcd_datamc2 and fig:invqcd_mindphi
+
+At QCD preselection level = mindphi(j1j2,MET)>1.5, metsig>3
+control plots with MC QCD out-of-the-box (no renormalisation)
+
+-> edit LTAnalysis to select QCDraw for plots (with no normalisation): change line commented by "CAMM1"
+-> use script DefaultConfigQCDpresel.cfg
+
+CHECK THE CUTS !!! 
+
+ - fig:invqcd_datamc1 and fig:invqcd_datamc2
+
+Control plots for inverted selection: allmindphi < 1.0 but all other cuts like in signal region.
+With MC QCD normalised to data-MC.
+
+-> use script DefaultConfigSig.cfg to run control plots in "qcd" region
+
+CHECK THE CUTS !!! 
+
+ - fig:invqcd_3j
+
+Control plots for QCD-dominated region with 3 jets, looser sel to have some QCD to check the shape, all backgrounds normalised to MC in their control regions, including the QCD this time using data with inverted selection. Do not blind: 3j sel ensures negligible signal contribution.
+
+-> use script DefaultConfigQCD.cfg
+
+ - fig:mindphiSF and fig:mindphiSF2 and fig:metsigSF and fig:metsigSF2
+
+-> use script DefaultConfigNorm.cfg with varying the selection such that to produce output folders:
+
+Norm1:
+output_allmindphi_1_metsig_3_4_mindphi_1_2/
+Norm2:
+output_allmindphi_1_metsig_3_4_mindphi_2/
+Norm3:
+output_allmindphi_1_metsig_4_mindphi_1_2/
+Norm1+2
+output_allmindphi_1_metsig_3_4_mindphi_1/
+Norm1+3
+output_allmindphi_1_metsig_3_mindphi_1_2/  
+
+ - extract final estimate:
+run macros sfMetSig.C and sfMinDPhi.C changing "region" to 1,2,3,12,13 as appropriate to fill table tab:qcdSF.
+(> root sfMetSig.C++)

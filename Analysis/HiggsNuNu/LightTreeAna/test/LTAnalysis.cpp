@@ -292,6 +292,9 @@ int main(int argc, char* argv[]){
   else if(channel=="qcd"){//QCD
     sigcat=qcdcat;
     zextrasigcat=qcdzcat;
+    //set all to qcd versions
+    jetmetdphicut=qcdjetmetdphicut;
+    sigextrasel=qcdextrasel;
   }
   else if(channel=="top"){//top
     sigcat=topcat;
@@ -1141,6 +1144,7 @@ int main(int argc, char* argv[]){
     .set_is_inratioden(true)
     .set_legname("MCQCD")
     .set_sample("mcqcd");
+  //CAMM1 .set_sample("qcdraw");
 
   LTPlotElement vvele;
   vvele.set_is_data(false)
@@ -1170,7 +1174,8 @@ int main(int argc, char* argv[]){
     .set_sample("top");
 
   std::ostringstream legname;
-  legname << "qqH #times " << signalf; 
+  legname << "qqH" ;
+  if (signalf != 1) legname <<  "#times " << signalf; 
 
   LTPlotElement sigele;
   sigele.set_is_data(false)
@@ -1181,7 +1186,8 @@ int main(int argc, char* argv[]){
     .set_sample("qqH");
 
   legname.str("");
-  legname << "ggH #times " << signalf; 
+  legname << "ggH";
+  if (signalf != 1) legname << " #times " << signalf; 
   
   LTPlotElement ggHele;
   ggHele.set_is_data(false)
@@ -1233,6 +1239,7 @@ int main(int argc, char* argv[]){
   dirvec.push_back("wg");  
   dirvec.push_back("top");
   dirvec.push_back("qqH");
+  dirvec.push_back("ggH");
   if(!(channel=="nunu"&&runblind))dirvec.push_back("data_obs");
 
   SummaryTable summary("summary");
