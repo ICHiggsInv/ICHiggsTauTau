@@ -45,3 +45,10 @@ output_allmindphi_1_metsig_3_mindphi_1_2/
  - extract final estimate:
 run macros sfMetSig.C and sfMinDPhi.C changing "region" to 1,2,3,12,13 as appropriate to fill table tab:qcdSF.
 (> root sfMetSig.C++)
+
+Table tab:qcdcomp is filled also by hand with numbers from the LTAnalysis logfile.
+
+Final number is the envelop of the two Norm1 +/- err
+extrapolations. If min is the minimum val-err and max the maximum
+val+err value, taking (min+max)/2 for central value and (max-min)/2
+for uncertainty.
