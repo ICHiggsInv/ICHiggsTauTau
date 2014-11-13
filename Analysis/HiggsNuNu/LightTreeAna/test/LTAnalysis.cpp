@@ -155,8 +155,8 @@ int main(int argc, char* argv[]){
   shape.push_back("dijetmetnomu_scalarSum_pt(50,0,1400)");histTitle.push_back(";p_{T}^{jeta}+p_{T}^{jetb}+METnoMu;entries");
   shape.push_back("dijetmetnomu_vectorialSum_pt(20,0,400)");histTitle.push_back(";p_{T}(#vec{ja}+#vec{jb}+#vec{METnoMu});entries");
   shape.push_back("dijetmetnomu_ptfraction(20,0.,1.)");histTitle.push_back(";p_{T}^{dijet}/(p_{T}^{dijet}+METnoMu);entries");
-  shape.push_back("n_jets_30(10,0,10)");histTitle.push_back(";njets (p_{T}>30 GeV);entries");
-  shape.push_back("n_jets_15(10,0,10)");histTitle.push_back(";njets (p_{T}>15 GeV);entries");
+  //  shape.push_back("n_jets_30(10,0,10)");histTitle.push_back(";njets (p_{T}>30 GeV);entries");
+  //shape.push_back("n_jets_15(10,0,10)");histTitle.push_back(";njets (p_{T}>15 GeV);entries");
   shape.push_back("n_jets_cjv_30(10,0,10)");histTitle.push_back(";CJV jets (30 GeV);entries");
   //shape.push_back("n_jets_cjv_20EB_30EE(5,0,5)");histTitle.push_back(";CJV jets (20 GeV EB, 30 GeV EE);entries");
   shape.push_back("dijet_dphi(30,0.,3.1416)");histTitle.push_back(";#Delta#phi_{jj};entries");
@@ -166,10 +166,10 @@ int main(int argc, char* argv[]){
   shape.push_back("jet3_csv(25,0,1.0)");histTitle.push_back(";CSV (jet 3);entries");
   shape.push_back("m_mumu(30,60,120)");histTitle.push_back(";M_{#mu#mu} (GeV);entries");
   shape.push_back("lep_mt(40,0.,200.)");histTitle.push_back(";m_{T}(lepton+MET (GeV);entries");
-  shape.push_back("thrust(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
-  shape.push_back("thrust_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
-  shape.push_back("thrust_met(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
-  shape.push_back("thrust_met_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
+  //shape.push_back("thrust(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
+  //shape.push_back("thrust_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
+  //shape.push_back("thrust_met(50,-10,5)");histTitle.push_back(";ln(#tau_{#perp}); entries");
+  //shape.push_back("thrust_met_minor(50,-10,5)");histTitle.push_back(";ln(T_{m}); entries");
   
 
   assert(shape.size() == histTitle.size());
@@ -235,10 +235,10 @@ int main(int argc, char* argv[]){
   }
   */
 
-  //std::string dataset="SPLITPARKEDPLUSA";
-  std::string dataset="PARKEDPLUSA";
+  std::string dataset="SPLITPARKEDPLUSA";
+  //std::string dataset="PARKEDPLUSA";
 
-  std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=196531))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
+  std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<==203742))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
   std::string sigcat;
   std::string zextrasigcat;
 
@@ -350,14 +350,6 @@ int main(int argc, char* argv[]){
     .set_basesel(analysis->baseselection()+metsigcut+"&&"+jetmetdphicut+sigextrasel)
     .set_cat(sigcat);
 
-  DataShape wgamma("wgamma");
-  wgamma.set_dataset("WGamma")
-    .set_dirname("wg")
-    .set_shape(shape)
-    .set_dataweight(sigmcweight)
-    .set_basesel(analysis->baseselection()+metsigcut+"&&"+jetmetdphicut+sigextrasel)
-    .set_cat(sigcat);
-
   DataShape znunuraw("znunuraw");
   znunuraw.set_dataset("ZJets_nunu")
     .set_dirname("zvv")
@@ -411,7 +403,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> Zcontbkgsets;
   Zcontbkgsets.push_back("VV");
   Zcontbkgsets.push_back("Top");
-  Zcontbkgsets.push_back("WGamma");
   Zcontbkgsets.push_back("WJets_enu");
   Zcontbkgsets.push_back("WJets_munu");
   Zcontbkgsets.push_back("WJets_taunu");
@@ -527,7 +518,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> Wcontbkgsets; //List of sets for ncbkg
   Wcontbkgsets.push_back("VV");
   Wcontbkgsets.push_back("Top");
-  Wcontbkgsets.push_back("WGamma");
   //Wcontbkgsets.push_back("VBF-QCD");
 //   Wcontbkgsets.push_back("ZJets_ll");
 //   Wcontbkgsets.push_back("ZJets_ll_vbf");
@@ -536,17 +526,17 @@ int main(int argc, char* argv[]){
   std::vector<std::string> Wcontbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   Wcontbkgextrafactordir.push_back("");
   Wcontbkgextrafactordir.push_back("top");
-  Wcontbkgextrafactordir.push_back("");
+  //Wcontbkgextrafactordir.push_back("");
 
   std::vector<std::string> Wcontenrichbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   Wcontenrichbkgextrafactordir.push_back("");
   Wcontenrichbkgextrafactordir.push_back("topENRICH");
-  Wcontenrichbkgextrafactordir.push_back("");
+  //Wcontenrichbkgextrafactordir.push_back("");
 
   std::vector<int> Wcontbkgisz;
   Wcontbkgisz.push_back(0);
   Wcontbkgisz.push_back(0);
-  Wcontbkgisz.push_back(0);
+  //Wcontbkgisz.push_back(0);
 
   DataNormShape wmunu("wmunu");
   wmunu.set_sigmcset("WJets_munu")
@@ -777,7 +767,6 @@ int main(int argc, char* argv[]){
   //TOP
   std::vector<std::string> Topcontbkgsets;
   Topcontbkgsets.push_back("VV");
-  Topcontbkgsets.push_back("WGamma");
   Topcontbkgsets.push_back("WJets_enu");
   Topcontbkgsets.push_back("WJets_munu");
   Topcontbkgsets.push_back("WJets_taunu");
@@ -824,7 +813,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> QCDcontbkgsets; //list of sets for ncbkg
   QCDcontbkgsets.push_back("VV");
   QCDcontbkgsets.push_back("Top");
-  QCDcontbkgsets.push_back("WGamma");
    QCDcontbkgsets.push_back("ZJets_ll");
    QCDcontbkgsets.push_back("ZJets_ll_vbf");
   QCDcontbkgsets.push_back("WJets_enu");
@@ -834,7 +822,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> QCDcontbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   QCDcontbkgextrafactordir.push_back("");
   QCDcontbkgextrafactordir.push_back("top");
-  QCDcontbkgextrafactordir.push_back("");
   QCDcontbkgextrafactordir.push_back("zvv");
   QCDcontbkgextrafactordir.push_back("zvv");
   QCDcontbkgextrafactordir.push_back("wel");
@@ -844,7 +831,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> QCDcontenrichbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   QCDcontenrichbkgextrafactordir.push_back("");
   QCDcontenrichbkgextrafactordir.push_back("topENRICH");
-  QCDcontenrichbkgextrafactordir.push_back("");
   QCDcontenrichbkgextrafactordir.push_back("zvvENRICH");
   QCDcontenrichbkgextrafactordir.push_back("zvvENRICH");
   QCDcontenrichbkgextrafactordir.push_back("welENRICH");
@@ -854,7 +840,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> QCDsigbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   QCDsigbkgextrafactordir.push_back("");
   QCDsigbkgextrafactordir.push_back("top");
-  QCDsigbkgextrafactordir.push_back("");
   QCDsigbkgextrafactordir.push_back("zvvQCD");
   QCDsigbkgextrafactordir.push_back("zvvQCD");
   QCDsigbkgextrafactordir.push_back("welQCD");
@@ -864,7 +849,6 @@ int main(int argc, char* argv[]){
   std::vector<std::string> QCDcontqcdbkgextrafactordir;//list of dirs with data driven weights for above backgrounds
   QCDcontqcdbkgextrafactordir.push_back("");
   QCDcontqcdbkgextrafactordir.push_back("topENRICH");
-  QCDcontqcdbkgextrafactordir.push_back("");
   QCDcontqcdbkgextrafactordir.push_back("zvvQCDENRICH");
   QCDcontqcdbkgextrafactordir.push_back("zvvQCDENRICH");
   QCDcontqcdbkgextrafactordir.push_back("welQCDENRICH");
@@ -874,7 +858,6 @@ int main(int argc, char* argv[]){
   std::vector<int> QCDcontbkgisz;
   QCDcontbkgisz.push_back(0);
   QCDcontbkgisz.push_back(0);
-   QCDcontbkgisz.push_back(0);
   if(channel!="mumu"){
     QCDcontbkgisz.push_back(2);
     QCDcontbkgisz.push_back(1);
@@ -974,86 +957,6 @@ int main(int argc, char* argv[]){
     .set_zsigcat("m_mumu_gen>80&&m_mumu_gen<100"+qcdzcat+metsigcut+"&&"+qcdjetmetdphicut);
 
 
-  //NORMALISED PLOTS FOR REFEREE
-//   std::vector<std::string> ewksets; //List of sets for ewk
-//   ewksets.push_back("VV");
-//   ewksets.push_back("Top");
-//   ewksets.push_back("ZJets_ll");
-//   ewksets.push_back("ZJets_ll_vbf");
-//   ewksets.push_back("ZJets_nunu");
-//   ewksets.push_back("WJets_enu");
-//   ewksets.push_back("WJets_munu");
-//   ewksets.push_back("WJets_taunu");
-
-//   std::vector<std::string> shapes; //List of shapes to draw
-//   shapes.push_back("dijet_M(370,150.,2000.)");
-//   shapes.push_back("dijet_deta(160,0.,8.)");
-//   shapes.push_back("dijet_dphi(310,0.,3.1)");
-//   shapes.push_back("met(80,0.,400.)");
-//   shapes.push_back("cjvjetpt(100,0.,100.)");
-//   shapes.push_back("met(50,0.,500.)");
-//   shapes.push_back("met_x(50,0.,500.)");
-//   shapes.push_back("met_y(50,0.,500.)");
-
-//   NormPlots normplots("normplots");
-//   normplots.set_qcdset("QCD")
-//     .set_sigset("sig125")
-//     .set_ewkset(ewksets)
-//     .set_cat("")
-//     .set_basesel("jet1_eta<4.7&&jet2_eta<4.7&&jet1_pt>50&&jet2_pt>50&&nvetoelectrons==0 && nvetomuons==0&&dijet_M>150&&met>130")
-//     .set_shapes(shapes);
-
-
-  //MVA TRAIN
-  std::vector<std::string> sigsets;
-  sigsets.push_back("sig125");
-  std::vector<std::string> bkgsets;
-  bkgsets.push_back("QCD");
-  std::vector<std::string> variables;
-  variables.push_back("jet2_eta");
-  variables.push_back("met");
-  variables.push_back("met_significance");
-  variables.push_back("mht");
-  variables.push_back("jet2met_dphi");
-  variables.push_back("jetmet_mindphi");
-  variables.push_back("jetunclet_mindphi");
-  variables.push_back("metunclet_dphi");
-  variables.push_back("dijetmet_scalarSum_pt");
-  variables.push_back("dijetmet_vectorialSum_pt");
-  variables.push_back("dijetmet_ptfraction");
-  variables.push_back("jet1met_scalarprod");
-  variables.push_back("jet2met_scalarprod");
-  variables.push_back("jet1met_scalarprod_frac := jet1met_scalarprod/met");
-  variables.push_back("jet2met_scalarprod_frac := jet2met_scalarprod/met");
-  std::vector<std::string> specvariables;
-
-  MVATrain mvatrainer("mvatrainer");
-  mvatrainer.set_sigsets(sigsets)
-    .set_bkgsets(bkgsets)
-    .set_variables(variables)
-    .set_specvariables(specvariables)
-    .set_basesel("passtrigger==1&&nvetomuons==0&&nvetoelectrons==0&&jet1_pt>50&&jet2_pt>50&&jet1_eta<4.7&&jet2_eta<4.7")
-    .set_sigcat("")
-    .set_bkgcat("");
-
-  //PLOTTER
-//   std::vector<std::vector<std::string> > plottersets;
-//   std::vector<std::string> sets1;
-//   sets1.push_back("sig125");
-//   std::vector<std::string> sets2;
-//   sets2.push_back("WJets_enu");
-//   plottersets.push_back(sets1);
-//   plottersets.push_back(sets2);
- 
-//   std::vector<std::string> plottervariables;
-//   plottervariables.push_back("BDT(40,-1.,1.)");
-
-//   Plotter plotter("plotter");
-//   plotter.set_sets(plottersets)
-//     .set_shapes(plottervariables)
-//     .set_basesel("passtrigger==1&&nvetomuons==0&&nvetoelectrons==0&&jet1_pt>50&&jet2_pt>50&&jet1_eta<4.7&&jet2_eta<4.7&&met_significance>3&&dijet_deta>3.6&&jetmet_mindphi>1.5")
-//     .set_cat("");
-  
   //HISTPLOTTER
   //std::vector<std::string> shapevec;
   std::vector<LTShapeElement> shapevec;
@@ -1143,8 +1046,8 @@ int main(int argc, char* argv[]){
     .set_in_stack(true)
     .set_is_inratioden(true)
     .set_legname("MCQCD")
-    .set_sample("mcqcd");
-  //CAMM1 .set_sample("qcdraw");
+    //!!  .set_sample("mcqcd");
+  .set_sample("qcdraw"); //!!CAMM1
 
   LTPlotElement vvele;
   vvele.set_is_data(false)
@@ -1154,15 +1057,6 @@ int main(int argc, char* argv[]){
     .set_is_inratioden(true)
     .set_legname("VV")
     .set_sample("vv");
-
-  LTPlotElement wgele;
-  wgele.set_is_data(false)
-    .set_scale(1)
-    .set_color(kGreen-3)
-    .set_in_stack(true)
-    .set_is_inratioden(true)
-    .set_legname("WGamma")
-    .set_sample("wg");
 
   LTPlotElement topele;
   topele.set_is_data(false)
@@ -1206,7 +1100,7 @@ int main(int argc, char* argv[]){
   if(channel=="nunu") elementvec.push_back(qcdele);
   if(channel=="qcd") elementvec.push_back(mcqcdele);
   elementvec.push_back(vvele);
-  elementvec.push_back(wgele);
+  //elementvec.push_back(wgele);
   elementvec.push_back(topele);
   elementvec.push_back(sigele);
   elementvec.push_back(ggHele);
@@ -1236,7 +1130,7 @@ int main(int argc, char* argv[]){
   if(channel=="nunu") dirvec.push_back("qcd");
   if (channel=="qcd") dirvec.push_back("mcqcd");
   dirvec.push_back("vv");
-  dirvec.push_back("wg");  
+  //dirvec.push_back("wg");  
   dirvec.push_back("top");
   dirvec.push_back("qqH");
   dirvec.push_back("ggH");
@@ -1254,8 +1148,6 @@ int main(int argc, char* argv[]){
   ##########################################*/
   
   //analysis->AddModule(&addfriends);
-  //analysis->AddModule(&mvatrainer);
-  //analysis->AddModule(&normplots);
   analysis->AddModule(&top);
   analysis->AddModule(&topENRICH);
   if (channel!="qcd"){
@@ -1293,7 +1185,7 @@ int main(int argc, char* argv[]){
    //analysis->AddModule(&zmumuraw);
    //analysis->AddModule(&znunuraw);
   analysis->AddModule(&vv);
-  analysis->AddModule(&wgamma);
+  //analysis->AddModule(&wgamma);
   //analysis->AddModule(&topraw);
   if(!(channel=="nunu"&&runblind))analysis->AddModule(&data);
   analysis->AddModule(&signal);
