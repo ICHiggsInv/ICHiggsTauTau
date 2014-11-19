@@ -238,7 +238,7 @@ int main(int argc, char* argv[]){
   std::string dataset="SPLITPARKEDPLUSA";
   //std::string dataset="PARKEDPLUSA";
 
-  std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=203742))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>40";
+  std::string dataextrasel="&&((((run>=190456)&&(run<=193621))&&passtrigger==1)||(((run>=193833)&&(run<=203742))&&passparkedtrigger1==1)||(((run>=203777)&&(run<=208686))&&passparkedtrigger2==1))&&l1met>=40";
   std::string sigcat;
   std::string zextrasigcat;
 
@@ -1046,8 +1046,8 @@ int main(int argc, char* argv[]){
     .set_in_stack(true)
     .set_is_inratioden(true)
     .set_legname("MCQCD")
-    //!!  .set_sample("mcqcd");
-  .set_sample("qcdraw"); //!!CAMM1
+    .set_sample("mcqcd");
+  //.set_sample("qcdraw"); //!!CAMM1
 
   LTPlotElement vvele;
   vvele.set_is_data(false)
